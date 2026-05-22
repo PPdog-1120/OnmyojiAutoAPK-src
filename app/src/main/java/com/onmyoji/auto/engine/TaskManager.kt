@@ -115,6 +115,10 @@ class TaskManager(private val context: Context) {
                     TaskType.WANTED_QUESTS -> com.onmyoji.auto.engine.tasks.WantedQuestsTask(context, controller, config)
                     TaskType.ETERNITY_SEA -> com.onmyoji.auto.engine.tasks.EternitySeaTask(context, controller, config)
                 }
+                // 注入调度回调
+                task.scheduleCallback = { taskName, nextRunMs ->
+                    scheduleNext(taskName, nextRunMs)
+                }
                 val logJob = launch {
                     task.logs.collect { line ->
                         emitAndLog(line)
@@ -144,6 +148,25 @@ class TaskManager(private val context: Context) {
     }
 
     fun isRunning(): Boolean = _state.value == State.RUNNING
+
+    // ========== 任务调度 ==========
+
+    // 存储各任务的下次运行时间
+    private val nextRunTimes = mutableMapOf<String, Long>()
+
+    /**
+     * 设置任务的下次运行时间
+     * 存储到内存中，可通过 getNextRunTime() 查询
+     */
+    fun scheduleNext(taskName: String, nextRunMs: Long) {
+        nextRunTimes[taskName] = nextRunMs
+        android.util.Log.d("TaskManager", "Scheduled next run for $taskName at $nextRunMs")
+    }
+
+    /**
+     * 获取任务的下次运行时间
+     */
+    fun getNextRunTime(taskName: String): Long? = nextRunTimes[taskName]
 
     // ========== 日志文件操作 ==========
 

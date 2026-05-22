@@ -266,8 +266,19 @@ class WeeklyTriflesTask(
         }
 
         var count = 0
+        // 每次召唤的票数（默认10，如果检测到50次按钮则为50）
+        var batchSize = 10
+
         while (count < destNum) {
             val img = screenshot() ?: continue
+            // 检测当前选择的是10次还是50次
+            // 通过检查 "10次" 和 "50次" 文字位置来判断
+            // 简化实现：如果剩余不足50次，切换到10次
+            if (count + 50 > destNum && batchSize == 50) {
+                log("剩余不足50张，切换到10次")
+                batchSize = 10
+            }
+
             // 点击召唤
             if (appearThenClick(I_BM_ENTER, img) || appearThenClick(I_BM_AGAIN, img)) {
                 delay(400)
@@ -280,10 +291,17 @@ class WeeklyTriflesTask(
                     device.click((200..1000).random(), (200..600).random())
                     delay(800)
                 }
-                count += 10
+                count += batchSize
                 log("破碎符咒: $count/$destNum")
             } else {
+                // 既没有出现召唤也没有出现再次召唤，退出
                 break
+            }
+
+            // 如果剩余票数足够50次且当前是10次，尝试切换到50次
+            if (count + 50 <= destNum && batchSize == 10) {
+                log("剩余足够，切换到50次")
+                batchSize = 50
             }
         }
 

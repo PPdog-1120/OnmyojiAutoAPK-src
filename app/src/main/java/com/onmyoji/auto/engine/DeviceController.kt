@@ -126,6 +126,32 @@ class DeviceController(private val service: AccessibilityService) {
         lastScreenshot = bitmap
     }
 
+    // ========== 卡死检测 ==========
+    private val stuckRecords = mutableMapOf<String, Long>()
+
+    /**
+     * 添加卡死检测标记 — 记录当前状态的开始时间
+     * 如果同一状态持续过久，说明可能卡死了
+     */
+    fun stuckRecordAdd(recordName: String) {
+        stuckRecords[recordName] = System.currentTimeMillis()
+    }
+
+    /**
+     * 清除卡死检测标记 — 状态已变化，重置计时
+     */
+    fun stuckRecordClear() {
+        stuckRecords.clear()
+    }
+
+    /**
+     * 检查是否卡死 — 某个状态持续超过指定时间
+     */
+    fun isStuck(recordName: String, timeoutMs: Long = 60_000): Boolean {
+        val startTime = stuckRecords[recordName] ?: return false
+        return System.currentTimeMillis() - startTime > timeoutMs
+    }
+
     /**
      * 查找节点
      */

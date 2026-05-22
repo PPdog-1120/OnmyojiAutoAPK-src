@@ -367,6 +367,7 @@ class AbyssShadowsTask(
     }
 
     private suspend fun runGeneralBattleBack(monsterType: String) {
+        // 确保进入战斗
         while (true) {
             val img = screenshot() ?: continue
             if (waitUntilAppear(I_EQUIPPING, 4000)) {
@@ -374,6 +375,7 @@ class AbyssShadowsTask(
             }
             if (!I_EQUIPPING.match(screenshot() ?: continue, context).matched) break
         }
+        log("Clicked prepare")
 
         val combatTime = when (monsterType) {
             "BOSS" -> config.abyssShadowsBossCombatTime
@@ -383,13 +385,18 @@ class AbyssShadowsTask(
         }
 
         if (config.abyssShadowsCombatTimeEnable) {
+            // 添加卡死检测标记
+            device.stuckRecordAdd("BATTLE_STATUS_S")
             val startTime = System.currentTimeMillis()
             while (System.currentTimeMillis() - startTime < combatTime * 1000) {
                 val img = screenshot() ?: continue
                 if (appearThenClick(I_WIN, img, 1500)) break
             }
+            log("Combat time ended, proceeding to exit")
+            device.stuckRecordClear()
         }
 
+        // 战斗提前结束，此时没有返回按钮
         if (appearThenClick(I_WIN, screenshot(), 1500)) return
 
         // 点击返回
@@ -400,6 +407,7 @@ class AbyssShadowsTask(
             if (appearThenClick(I_WIN, img, 2000)) continue
             if (I_ABYSS_NAVIGATION.match(img, context).matched) break
         }
+        log("Click exit_ensure")
     }
 
     override protected suspend fun waitUntilDisappear(rule: RuleImage, timeoutMs: Long) {

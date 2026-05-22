@@ -132,14 +132,22 @@ class DemonEncounterTask(context: Context, device: DeviceController, config: Tas
     }
 
     private suspend fun executeLantern() {
-        // 先点四次寻找
-        while (true) {
+        // 先点四次寻找 — 通过检测寻找按钮是否还存在来判断次数
+        var findCount = 0
+        val maxFinds = 4
+        while (findCount < maxFinds) {
             val img = screenshot() ?: continue
-            val cu = 0 // OCR counter
-            if (cu == 0) break
-            appearThenClick(I_DE_FIND, img, 2500)
+            // 如果寻找按钮还在，说明还有次数
+            if (I_DE_FIND.match(img, context).matched) {
+                appearThenClick(I_DE_FIND, img, 2500)
+                findCount++
+                log("Find lantern $findCount/$maxFinds")
+            } else {
+                // 寻找按钮消失，说明次数用完
+                break
+            }
         }
-        log("Lantern count success")
+        log("Lantern count success, found $findCount times")
 
         // 领取红色达摩
         if (!I_DE_AWARD.match(screenshot() ?: return, context).matched) {
@@ -196,9 +204,11 @@ class DemonEncounterTask(context: Context, device: DeviceController, config: Tas
             if (I_LETTER_CLOSE.match(img, context).matched) break
             val (x, y) = target.coord(); device.click(x, y); delay(1000)
         }
-        // 答题
+        // 答题 — 随机选择答案（无OCR时的最优策略）
+        val answers = listOf(C_ANSWER_1, C_ANSWER_2, C_ANSWER_3)
         for (i in 1..3) {
-            val answerClick = C_ANSWER_1 // 简化：默认选第一个
+            val answerClick = answers.random()
+            log("Answer $i: selecting random option")
             while (true) {
                 val img = screenshot() ?: continue
                 if (!I_LETTER_CLOSE.match(img, context).matched) break

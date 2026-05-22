@@ -112,6 +112,10 @@ open class GeneralBattle(
     private val I_PRESET_WIT_NUMBER = RuleImage("preset_wit_number",
         "general_battle/gb/gb_preset_wit_number.png",
         intArrayOf(40, 655, 37, 37), intArrayOf(9, 636, 100, 74), 0.8f)
+    // 贪吃鬼 — 战斗胜利后出现的贪吃鬼奖励界面
+    private val I_GREED_GHOST = RuleImage("greed_ghost",
+        "general_battle/gb/gb_greed_ghost.png",
+        intArrayOf(547, 518, 172, 96), intArrayOf(547, 518, 172, 96), 0.8f)
 
     // Swipe Rule Assets
     private val S_BATTLE_RANDOM_LEFT = RuleSwipe("battle_random_left", 122, 155, 667, 147)
@@ -320,6 +324,25 @@ open class GeneralBattle(
             if (appear(I_REWARD_GOLD, img, 0.8f)) {
                 win = true
                 break
+            }
+
+            // 如果出现贪吃鬼 — 战斗胜利的一种特殊结算界面
+            if (appear(I_GREED_GHOST, img, 0.8f)) {
+                log("Win battle (greedy ghost)")
+                waitUntilAppear(I_REWARD, 1500)
+                val ghostImg = screenshot()
+                if (ghostImg != null && !appear(I_GREED_GHOST, ghostImg)) {
+                    log("Greedy ghost disappear, maybe false battle")
+                    continue
+                }
+                // 点击贪吃鬼直到消失
+                while (true) {
+                    val frame = screenshot() ?: continue
+                    if (!appear(I_GREED_GHOST, frame)) break
+                    val actionClick = listOf(C_REWARD_1, C_REWARD_2, C_REWARD_3).random()
+                    appearThenClick(I_GREED_GHOST, frame, 1500, actionClick)
+                }
+                return true
             }
 
             // 如果开启战斗过程随机滑动

@@ -147,9 +147,30 @@ class DailyTriflesTask(
         0.8f
     )
 
+    // 普通召唤相关
+    private val I_SUMMON_ONE = RuleImage(
+        "summon_one",
+        "DailyTrifles/summon/summon_one.png",
+        intArrayOf(540, 550, 200, 80),
+        intArrayOf(540, 550, 200, 80),
+        0.8f
+    )
+    private val I_SUMMON_CONFIRM = RuleImage(
+        "summon_confirm",
+        "DailyTrifles/summon/summon_confirm.png",
+        intArrayOf(540, 600, 200, 60),
+        intArrayOf(540, 600, 200, 60),
+        0.8f
+    )
+
+    private val gameUi = GameUi(context, device, config)
+
     override suspend fun run() {
         log("=== 每日杂务任务开始 ===")
 
+        if (config.dailyTriflesOneSummon) {
+            runOneSummon()
+        }
         if (config.dailyTriflesFriendLove) {
             runFriendLove()
         }
@@ -161,6 +182,39 @@ class DailyTriflesTask(
         }
 
         log("=== 每日杂务任务完成 ===")
+    }
+
+    /**
+     * 每日召唤一次 — 对应 Python run_one_summon
+     * 导航到召唤页面，召唤一次后返回
+     */
+    private suspend fun runOneSummon() {
+        log("每日召唤")
+        gameUi.uiGetCurrentPage()
+        gameUi.uiGoto("page_summon")
+        delay(1000)
+
+        // 点击召唤按钮
+        val img = screenshot()
+        if (img != null && I_SUMMON_ONE.match(img, context).matched) {
+            appearThenClick(I_SUMMON_ONE, img, 3000)
+            // 等待召唤动画
+            delay(3000)
+            // 随机点击屏幕跳过动画
+            device.click((300..900).random(), (200..500).random())
+            delay(2000)
+            // 点击确认
+            val confirmImg = screenshot()
+            if (confirmImg != null && I_SUMMON_CONFIRM.match(confirmImg, context).matched) {
+                appearThenClick(I_SUMMON_CONFIRM, confirmImg, 1000)
+            }
+            log("每日召唤完成")
+        } else {
+            log("未找到召唤按钮，跳过")
+        }
+
+        // 返回主页
+        backToMain()
     }
 
     /**

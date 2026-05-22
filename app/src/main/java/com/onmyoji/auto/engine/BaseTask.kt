@@ -65,6 +65,30 @@ abstract class BaseTask(
     }
 
     /**
+     * 出现则点击（带 Float threshold 重载）
+     */
+    protected suspend fun appearThenClick(
+        rule: RuleImage,
+        screenshot: Bitmap,
+        threshold: Float
+    ): Boolean {
+        val result = rule.match(screenshot, context)
+        if (result.matched) {
+            device.click(result.centerX, result.centerY)
+            delay(500)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * 判断目标是否出现（不点击）
+     */
+    protected fun appear(rule: RuleImage, img: Bitmap, threshold: Float = 0.8f): Boolean {
+        return rule.match(img, context).matched
+    }
+
+    /**
      * 等待目标出现
      */
     protected suspend fun waitUntilAppear(
@@ -130,13 +154,33 @@ abstract class BaseTask(
 
     // ========== 任务调度方法 ==========
 
+    // 调度回调 — 由 TaskManager 注入
+    var scheduleCallback: ((taskName: String, nextRunMs: Long) -> Unit)? = null
+
     /**
      * 设置本任务的下次运行时间
      */
     protected fun setNextRun(timeMs: Long) {
-        android.util.Log.d("BaseTask", "[${javaClass.simpleName}] setNextRun: $timeMs")
-        // 由 TaskManager 注入调度回调，当前仅日志记录
-        // 后续可通过 TaskManager.scheduleNext(taskType, timeMs) 实现真正的调度
+        val taskName = javaClass.simpleName
+        android.util.Log.d("BaseTask", "[$taskName] setNextRun: $timeMs")
+        scheduleCallback?.invoke(taskName, timeMs)
+    }
+
+    /**
+     * 设置任务的下次运行时间（带成功/失败参数）
+     * 对应 Python set_next_run(task, success, finish)
+     */
+    protected fun setNextRun(taskName: String, success: Boolean, finish: Boolean = true) {
+        val delayMs = if (success) {
+            // 成功：24小时后重试
+            24 * 60 * 60 * 1000L
+        } else {
+            // 失败：30分钟后重试
+            30 * 60 * 1000L
+        }
+        val nextRun = System.currentTimeMillis() + delayMs
+        android.util.Log.d("BaseTask", "[$taskName] setNextRun: success=$success, finish=$finish, nextRun=$nextRun")
+        scheduleCallback?.invoke(taskName, nextRun)
     }
 
     /**
@@ -145,6 +189,7 @@ abstract class BaseTask(
     protected fun setRealmRaidNextRun(delayMs: Long) {
         val runAt = System.currentTimeMillis() + delayMs
         android.util.Log.d("BaseTask", "setRealmRaidNextRun: runAt=$runAt (delay=${delayMs}ms)")
+        scheduleCallback?.invoke("RealmRaid", runAt)
     }
 
     /**
@@ -153,5 +198,6 @@ abstract class BaseTask(
     protected fun setExplorationNextRun(delayMs: Long) {
         val runAt = System.currentTimeMillis() + delayMs
         android.util.Log.d("BaseTask", "setExplorationNextRun: runAt=$runAt (delay=${delayMs}ms)")
+        scheduleCallback?.invoke("Exploration", runAt)
     }
 }

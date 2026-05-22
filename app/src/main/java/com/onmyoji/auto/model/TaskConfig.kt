@@ -65,6 +65,7 @@ class TaskConfig {
     var floatParadeLevelReward2: Int = 1
 
     // ========== DailyTrifles 每日杂务 ==========
+    var dailyTriflesOneSummon: Boolean = true
     var dailyTriflesFriendLove: Boolean = false
     var dailyTriflesLuckMsg: Boolean = false
     var dailyTriflesStoreSign: Boolean = false

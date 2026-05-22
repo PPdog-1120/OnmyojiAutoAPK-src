@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MainScreen(
     taskManager: TaskManager,
@@ -250,11 +250,11 @@ fun MainScreen(
                 TaskType.OROCHI -> GenericTaskConfig("八岐大蛇", config, listOf(
                     ConfigField("层数", config.orochiLayer) { config = config.copy(orochiLayer = it) },
                     ConfigField("模式", config.orochiUserStatus) { config = config.copy(orochiUserStatus = it) },
-                    ConfigToggle("御魂Buff", config.orochiSoulBuffEnable) { config = config.copy(orochiSoulBuffEnable = it) },
+                    ConfigToggleData("御魂Buff", config.orochiSoulBuffEnable) { config = config.copy(orochiSoulBuffEnable = it) },
                 ))
                 TaskType.AREA_BOSS -> GenericTaskConfig("地域鬼王", config, listOf(
                     ConfigField("数量", config.areaBossNumber.toString()) { config = config.copy(areaBossNumber = it.toIntOrNull() ?: 3) },
-                    ConfigToggle("收藏", config.areaBossUseCollect) { config = config.copy(areaBossUseCollect = it) },
+                    ConfigToggleData("收藏", config.areaBossUseCollect) { config = config.copy(areaBossUseCollect = it) },
                 ))
                 TaskType.EVO_ZONE -> GenericTaskConfig("觉醒", config, listOf(
                     ConfigField("层数", config.evoZoneLayer) { config = config.copy(evoZoneLayer = it) },
@@ -510,24 +510,35 @@ fun RealmRaidConfig(config: TaskConfig, onChange: (TaskConfig) -> Unit) {
 
 // ========== 通用配置组件 ==========
 
+sealed interface ConfigItem
+
 data class ConfigField(
     val label: String,
     val value: String,
     val onChange: (String) -> Unit
-)
+) : ConfigItem
+
+data class ConfigToggleData(
+    val label: String,
+    val value: Boolean,
+    val onChange: (Boolean) -> Unit
+) : ConfigItem
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GenericTaskConfig(taskName: String, config: TaskConfig, fields: List<ConfigField>) {
+fun GenericTaskConfig(taskName: String, config: TaskConfig, fields: List<ConfigItem>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         for (field in fields) {
-            OutlinedTextField(
-                value = field.value,
-                onValueChange = field.onChange,
-                label = { Text(field.label) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = androidx.compose.ui.text.TextStyle(color = Color.White)
-            )
+            when (field) {
+                is ConfigField -> OutlinedTextField(
+                    value = field.value,
+                    onValueChange = field.onChange,
+                    label = { Text(field.label) },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = androidx.compose.ui.text.TextStyle(color = Color.White)
+                )
+                is ConfigToggleData -> ConfigToggle(field.label, field.value, field.onChange)
+            }
         }
     }
 }

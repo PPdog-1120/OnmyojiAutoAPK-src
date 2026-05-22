@@ -23,7 +23,7 @@ fun MainScreen(
     onCheckProjection: () -> Boolean
 ) {
     val state = remember {
-        createMainScreenState(
+        MainScreenState(
             taskManager = taskManager,
             callbacks = ScreenCallbacks(
                 onRequestAccessibility = onRequestAccessibility,

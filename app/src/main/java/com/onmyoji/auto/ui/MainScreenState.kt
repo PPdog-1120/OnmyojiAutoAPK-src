@@ -22,43 +22,15 @@ class ScreenCallbacks(
 class MainScreenState(
     val taskManager: TaskManager,
     val callbacks: ScreenCallbacks,
-    val selectedTask: MutableState<TaskType>,
-    val config: MutableState<TaskConfig>,
-    val accessibilityEnabled: MutableState<Boolean>,
-    val projectionEnabled: MutableState<Boolean>,
-    val logLines: MutableList<String>,
-    val logFilePath: MutableState<String?>,
-    val taskState: MutableState<TaskManager.State>,
-    val runningTask: MutableState<TaskType?>,
-)
-
-// ========== 状态工厂（避免寄存器溢出）==========
-
-fun createMainScreenState(
-    taskManager: TaskManager,
-    callbacks: ScreenCallbacks
-): MainScreenState {
-    val selectedTask = mutableStateOf(TaskType.EXPLORATION)
-    val config = mutableStateOf(TaskConfig())
-    val accessibilityEnabled = mutableStateOf(false)
-    val projectionEnabled = mutableStateOf(false)
-    val logLines = mutableStateListOf<String>()
-    val logFilePath = mutableStateOf<String?>(null)
-    val taskState = mutableStateOf(TaskManager.State.IDLE)
-    val runningTask = mutableStateOf<TaskType?>(null)
-
-    return MainScreenState(
-        taskManager = taskManager,
-        callbacks = callbacks,
-        selectedTask = selectedTask,
-        config = config,
-        accessibilityEnabled = accessibilityEnabled,
-        projectionEnabled = projectionEnabled,
-        logLines = logLines,
-        logFilePath = logFilePath,
-        taskState = taskState,
-        runningTask = runningTask,
-    )
+) {
+    val selectedTask: MutableState<TaskType> = mutableStateOf(TaskType.EXPLORATION)
+    val config: MutableState<TaskConfig> = mutableStateOf(TaskConfig())
+    val accessibilityEnabled: MutableState<Boolean> = mutableStateOf(false)
+    val projectionEnabled: MutableState<Boolean> = mutableStateOf(false)
+    val logLines: MutableList<String> = mutableStateListOf()
+    val logFilePath: MutableState<String?> = mutableStateOf(null)
+    val taskState: MutableState<TaskManager.State> = mutableStateOf(TaskManager.State.IDLE)
+    val runningTask: MutableState<TaskType?> = mutableStateOf(null)
 }
 
 // ========== 操作函数 ==========

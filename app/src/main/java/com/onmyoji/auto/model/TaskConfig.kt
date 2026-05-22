@@ -4,385 +4,390 @@ import com.onmyoji.auto.engine.component.GeneralBattleConfig
 import com.onmyoji.auto.engine.component.GeneralInvite
 
 /**
- * 任务配置数据类
+ * 任务配置 — 普通 class + var 属性，避免 data class 287 参数构造器导致 DEX 寄存器溢出
  */
-data class TaskConfig(
-    val explorationLevel: String = "第二十八章",
-    val limitTimeMinutes: Int = 30,
-    val minionsCount: Int = 30,
-    val autoRotate: Boolean = true,
-    val chooseRarity: String = "N卡",
+class TaskConfig {
+    // ========== 探索 ==========
+    var explorationLevel: String = "第二十八章"
+    var limitTimeMinutes: Int = 30
+    var minionsCount: Int = 30
+    var autoRotate: Boolean = true
+    var chooseRarity: String = "N卡"
 
     // 绘卷模式
-    val scrollsEnable: Boolean = true,
-    val scrollsThreshold: Int = 25,
+    var scrollsEnable: Boolean = true
+    var scrollsThreshold: Int = 25
 
     // 个人突破
-    val numberAttack: Int = 30,
-    val exitFour: Boolean = true,
-    val orderAttack: String = "5>4>3>2>1>0",
-    val threeRefresh: Boolean = false,
+    var numberAttack: Int = 30
+    var exitFour: Boolean = true
+    var orderAttack: String = "5>4>3>2>1>0"
+    var threeRefresh: Boolean = false
 
     // 通用战斗
-    val lockTeam: Boolean = false,
+    var lockTeam: Boolean = false
 
     // ========== SoulsTidy 御魂整理 ==========
-    val soulsTidyEnableGreed: Boolean = true,
-    val soulsTidyEnableManeki: Boolean = true,
+    var soulsTidyEnableGreed: Boolean = true
+    var soulsTidyEnableManeki: Boolean = true
 
     // ========== CollectiveMissions 集体任务 ==========
-    val collectiveMissionsSelect: String = "觉醒三",
-    val collectiveMissionsType: String = "donate", // donate / feed / soul
+    var collectiveMissionsSelect: String = "觉醒三"
+    var collectiveMissionsType: String = "donate"
 
     // ========== Delegation 委派 ==========
-    val delegationNames: List<String> = listOf("画", "鸟羽", "寻找耳环", "猫老大", "接送", "痕迹"),
-
-    // ========== FindJade 找玉 ==========
-    // (简化版，无需额外配置)
-
-    // ========== GotoMain 回主页 ==========
-    // (无需额外配置)
+    var delegationNames: List<String> = listOf("画", "鸟羽", "寻找耳环", "猫老大", "接送", "痕迹")
 
     // ========== GuildActivityMonitor 寮活动监控 ==========
-    val guildActivityMonitorRunDays: String = "1,2,3,4,5,6,7",
-    val guildActivityMonitorDuration: Int = 15,
-    val guildActivityMonitorInterval: Int = 30,
-    val guildActivityMonitorActivities: String = "道馆,狭间,宴会,退治",
-
-    // ========== GuildBanquet 寮宴 ==========
-    // (通过时间配置管理，无需额外字段)
+    var guildActivityMonitorRunDays: String = "1,2,3,4,5,6,7"
+    var guildActivityMonitorDuration: Int = 15
+    var guildActivityMonitorInterval: Int = 30
+    var guildActivityMonitorActivities: String = "道馆,狭间,宴会,退治"
 
     // ========== MemoryScrolls 记忆绘卷 ==========
-    val memoryScrollsNumber: Int = 1,
-    val memoryScrollsAutoContribute: Boolean = true,
+    var memoryScrollsNumber: Int = 1
+    var memoryScrollsAutoContribute: Boolean = true
 
     // ========== Pets 宠物 ==========
-    val petsFeast: Boolean = true,
+    var petsFeast: Boolean = true
 
     // ========== TalismanPass 花合战 ==========
-    val talismanPassLevelReward: Int = 2, // 1/2/3
+    var talismanPassLevelReward: Int = 2
 
     // ========== WeeklyTrifles 每周杂务 ==========
-    val weeklyTriflesShareCollect: Boolean = true,
-    val weeklyTriflesShareAreaBoss: Boolean = true,
-    val weeklyTriflesShareSecret: Boolean = true,
-    val weeklyTriflesBrokenAmulet: Int = 100,
+    var weeklyTriflesShareCollect: Boolean = true
+    var weeklyTriflesShareAreaBoss: Boolean = true
+    var weeklyTriflesShareSecret: Boolean = true
+    var weeklyTriflesBrokenAmulet: Int = 100
 
     // ========== FloatParade 花车巡游 ==========
-    val floatParadeLevelReward1: Int = 3,
-    val floatParadeLevelReward2: Int = 1,
-
-    // ========== AutoCheckinBigGod 大神签到 ==========
-    // (简化版，无需额外配置)
+    var floatParadeLevelReward1: Int = 3
+    var floatParadeLevelReward2: Int = 1
 
     // ========== DailyTrifles 每日杂务 ==========
-    val dailyTriflesFriendLove: Boolean = false,
-    val dailyTriflesLuckMsg: Boolean = false,
-    val dailyTriflesStoreSign: Boolean = false,
-    val dailyTriflesBuySushiCount: Int = -1,
+    var dailyTriflesFriendLove: Boolean = false
+    var dailyTriflesLuckMsg: Boolean = false
+    var dailyTriflesStoreSign: Boolean = false
+    var dailyTriflesBuySushiCount: Int = -1
 
     // ========== MysteryShop 神秘商店 ==========
-    val mysteryShopMysteryAmulet: Boolean = false,
-    val mysteryShopBlackDarumaScrap: Boolean = false,
-    val mysteryShopTaiko3: Boolean = false,
-    val mysteryShopTaiko4: Boolean = false,
+    var mysteryShopMysteryAmulet: Boolean = false
+    var mysteryShopBlackDarumaScrap: Boolean = false
+    var mysteryShopTaiko3: Boolean = false
+    var mysteryShopTaiko4: Boolean = false
 
     // ========== KittyShop 猫咪商店 ==========
-    val kittyShopAttempts: Int = 1,
-    val kittyShopQuitWhenFinished: Boolean = false,
+    var kittyShopAttempts: Int = 1
+    var kittyShopQuitWhenFinished: Boolean = false
 
     // ========== Orochi 八岐大蛇 ==========
-    val orochiLayer: String = "悲",
-    val orochiUserStatus: String = "alone", // leader / member / alone / wild
-    val orochiSoulBuffEnable: Boolean = false,
-    val orochiGreenEnable: Boolean = false,
-    val orochiGreenMark: String = "none",
-    val orochiSwitchSoulEnable: Boolean = false,
-    val orochiSwitchGroupTeam: String = "-1,-1",
-    val orochiSwitchSoulEnableByName: Boolean = false,
-    val orochiGroupName: String = "",
-    val orochiTeamName: String = "",
-    val orochiLockTeam: Boolean = false,
-    val orochiDefaultInvite: Boolean = true,
-    val orochiLimitCount: Int = 30,
-    val orochiLimitTimeMinutes: Int = 30,
-    val orochiWaitTime: Int = 60,
-    val orochiInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig(),
-    val orochiBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
-    val orochiAutoSwitchSoul: Boolean = false,
-    val orochiTenSwitch: String = "-1,-1",
-    val orochiElevenSwitch: String = "-1,-1",
-    val orochiTwelveSwitch: String = "-1,-1",
-    val orochiThirteenSwitch: String = "-1,-1",
+    var orochiLayer: String = "悲"
+    var orochiUserStatus: String = "alone"
+    var orochiSoulBuffEnable: Boolean = false
+    var orochiGreenEnable: Boolean = false
+    var orochiGreenMark: String = "none"
+    var orochiSwitchSoulEnable: Boolean = false
+    var orochiSwitchGroupTeam: String = "-1,-1"
+    var orochiSwitchSoulEnableByName: Boolean = false
+    var orochiGroupName: String = ""
+    var orochiTeamName: String = ""
+    var orochiLockTeam: Boolean = false
+    var orochiDefaultInvite: Boolean = true
+    var orochiLimitCount: Int = 30
+    var orochiLimitTimeMinutes: Int = 30
+    var orochiWaitTime: Int = 60
+    var orochiInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig()
+    var orochiBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+    var orochiAutoSwitchSoul: Boolean = false
+    var orochiTenSwitch: String = "-1,-1"
+    var orochiElevenSwitch: String = "-1,-1"
+    var orochiTwelveSwitch: String = "-1,-1"
+    var orochiThirteenSwitch: String = "-1,-1"
 
     // ========== AreaBoss 地域鬼王 ==========
-    val areaBossNumber: Int = 3,
-    val areaBossUseCollect: Boolean = false,
-    val areaBossBossReward: Boolean = true,
-    val areaBossFloor: String = "day",
-    val areaBossSwitchSoulEnable: Boolean = false,
-    val areaBossSwitchGroupTeam: String = "-1,-1",
-    val areaBossSwitchSoulEnableByName: Boolean = false,
-    val areaBossGroupName: String = "",
-    val areaBossTeamName: String = "",
-    val areaBossReward: Boolean = true,
-    val areaBossAttack60: Boolean = false,
-    val areaBossRewardFloor: String = "1",
-    val areaBossBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var areaBossNumber: Int = 3
+    var areaBossUseCollect: Boolean = false
+    var areaBossBossReward: Boolean = true
+    var areaBossFloor: String = "day"
+    var areaBossSwitchSoulEnable: Boolean = false
+    var areaBossSwitchGroupTeam: String = "-1,-1"
+    var areaBossSwitchSoulEnableByName: Boolean = false
+    var areaBossGroupName: String = ""
+    var areaBossTeamName: String = ""
+    var areaBossReward: Boolean = true
+    var areaBossAttack60: Boolean = false
+    var areaBossRewardFloor: String = "1"
+    var areaBossBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== AbyssShadows 深渊暗影 ==========
-    val abyssShadowsTeam: Int = 1,
-    val abyssShadowsGreenEnable: Boolean = false,
-    val abyssShadowsSwitchSoulEnable: Boolean = false,
-    val abyssShadowsSwitchGroupTeam: String = "-1,-1",
-    val abyssShadowsSwitchSoulEnableByName: Boolean = false,
-    val abyssShadowsGroupName: String = "",
-    val abyssShadowsTeamName: String = "",
-    val abyssShadowsCombatTimeEnable: Boolean = false,
-    val abyssShadowsBossCombatTime: Int = 60,
-    val abyssShadowsGeneralCombatTime: Int = 60,
-    val abyssShadowsEliteCombatTime: Int = 60,
+    var abyssShadowsTeam: Int = 1
+    var abyssShadowsGreenEnable: Boolean = false
+    var abyssShadowsSwitchSoulEnable: Boolean = false
+    var abyssShadowsSwitchGroupTeam: String = "-1,-1"
+    var abyssShadowsSwitchSoulEnableByName: Boolean = false
+    var abyssShadowsGroupName: String = ""
+    var abyssShadowsTeamName: String = ""
+    var abyssShadowsCombatTimeEnable: Boolean = false
+    var abyssShadowsBossCombatTime: Int = 60
+    var abyssShadowsGeneralCombatTime: Int = 60
+    var abyssShadowsEliteCombatTime: Int = 60
 
     // ========== DyeTrials 染色试炼 ==========
-    val dyeTrialsLayer: String = "10",
-    val dyeTrialsSwitchSoulEnable: Boolean = false,
-    val dyeTrialsSwitchGroupTeam: String = "-1,-1",
-    val dyeTrialsSwitchSoulEnableByName: Boolean = false,
-    val dyeTrialsGroupName: String = "",
-    val dyeTrialsTeamName: String = "",
+    var dyeTrialsLayer: String = "10"
+    var dyeTrialsSwitchSoulEnable: Boolean = false
+    var dyeTrialsSwitchGroupTeam: String = "-1,-1"
+    var dyeTrialsSwitchSoulEnableByName: Boolean = false
+    var dyeTrialsGroupName: String = ""
+    var dyeTrialsTeamName: String = ""
 
     // ========== GoryouRealm 御灵境 ==========
-    val goryouRealmLayer: String = "3",
-    val goryouRealmSwitchSoulEnable: Boolean = false,
-    val goryouRealmSwitchGroupTeam: String = "-1,-1",
-    val goryouRealmClass: String = "1",
-    val goryouRealmLockTeam: Boolean = false,
-    val goryouRealmLimitCount: Int = 30,
-    val goryouRealmLimitTimeMinutes: Int = 30,
-    val goryouRealmBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var goryouRealmLayer: String = "3"
+    var goryouRealmSwitchSoulEnable: Boolean = false
+    var goryouRealmSwitchGroupTeam: String = "-1,-1"
+    var goryouRealmClass: String = "1"
+    var goryouRealmLockTeam: Boolean = false
+    var goryouRealmLimitCount: Int = 30
+    var goryouRealmLimitTimeMinutes: Int = 30
+    var goryouRealmBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== HeroTest 式神试炼 ==========
-    val heroTestGreenEnable: Boolean = false,
-    val heroTestSwitchSoulEnable: Boolean = false,
-    val heroTestSwitchGroupTeam: String = "-1,-1",
-    val heroTestSwitchSoulEnableByName: Boolean = false,
-    val heroTestGroupName: String = "",
-    val heroTestTeamName: String = "",
-    val heroTestLayer: String = "10",
-    val heroTestLimitTimeMinutes: Int = 30,
-    val heroTestLimitCount: Int = 30,
-    val heroTestBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
-    val heroTestLockTeam: Boolean = false,
-    val heroTestExp50Buff: Boolean = false,
-    val heroTestExp100Buff: Boolean = false,
+    var heroTestGreenEnable: Boolean = false
+    var heroTestSwitchSoulEnable: Boolean = false
+    var heroTestSwitchGroupTeam: String = "-1,-1"
+    var heroTestSwitchSoulEnableByName: Boolean = false
+    var heroTestGroupName: String = ""
+    var heroTestTeamName: String = ""
+    var heroTestLayer: String = "10"
+    var heroTestLimitTimeMinutes: Int = 30
+    var heroTestLimitCount: Int = 30
+    var heroTestBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+    var heroTestLockTeam: Boolean = false
+    var heroTestExp50Buff: Boolean = false
+    var heroTestExp100Buff: Boolean = false
 
     // ========== RyouToppa 寮突 ==========
-    val ryouToppaNumberAttack: Int = 30,
-    val ryouToppaExitFour: Boolean = false,
-    val ryouToppaSwitchSoulEnable: Boolean = false,
-    val ryouToppaSwitchGroupTeam: String = "-1,-1",
-    val ryouToppaSwitchSoulEnableByName: Boolean = false,
-    val ryouToppaGroupName: String = "",
-    val ryouToppaTeamName: String = "",
-    val ryouToppaAccess: Boolean = false,
-    val ryouToppaLockTeam: Boolean = false,
-    val ryouToppaLimitCount: Int = 30,
-    val ryouToppaLimitTimeMinutes: Int = 30,
-    val ryouToppaRandomDelay: Boolean = false,
-    val ryouToppaBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var ryouToppaNumberAttack: Int = 30
+    var ryouToppaExitFour: Boolean = false
+    var ryouToppaSwitchSoulEnable: Boolean = false
+    var ryouToppaSwitchGroupTeam: String = "-1,-1"
+    var ryouToppaSwitchSoulEnableByName: Boolean = false
+    var ryouToppaGroupName: String = ""
+    var ryouToppaTeamName: String = ""
+    var ryouToppaAccess: Boolean = false
+    var ryouToppaLockTeam: Boolean = false
+    var ryouToppaLimitCount: Int = 30
+    var ryouToppaLimitTimeMinutes: Int = 30
+    var ryouToppaRandomDelay: Boolean = false
+    var ryouToppaBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== Secret 秘闻 ==========
-    val secretLayer: String = "10",
-    val secretSwitchSoulEnable: Boolean = false,
-    val secretSwitchGroupTeam: String = "-1,-1",
-    val secretSwitchSoulEnableByName: Boolean = false,
-    val secretGroupName: String = "",
-    val secretTeamName: String = "",
-    val secretBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
-    val secretLayer10: Boolean = false,
-    val secretGold50: Boolean = false,
-    val secretGold100: Boolean = false,
+    var secretLayer: String = "10"
+    var secretSwitchSoulEnable: Boolean = false
+    var secretSwitchGroupTeam: String = "-1,-1"
+    var secretSwitchSoulEnableByName: Boolean = false
+    var secretGroupName: String = ""
+    var secretTeamName: String = ""
+    var secretBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+    var secretLayer10: Boolean = false
+    var secretGold50: Boolean = false
+    var secretGold100: Boolean = false
 
     // ========== Sougenbi 原 ==========
-    val sougenbiLayer: String = "10",
-    val sougenbiSwitchSoulEnable: Boolean = false,
-    val sougenbiSwitchGroupTeam: String = "-1,-1",
-    val sougenbiSwitchSoulEnableByName: Boolean = false,
-    val sougenbiGroupName: String = "",
-    val sougenbiTeamName: String = "",
-    val sougenbiBuffEnable: Boolean = false,
-    val sougenbiBuffGold50: Boolean = false,
-    val sougenbiBuffGold100: Boolean = false,
-    val sougenbiBuffExp50: Boolean = false,
-    val sougenbiBuffExp100: Boolean = false,
-    val sougenbiClass: String = "gold",
-    val sougenbiLockTeam: Boolean = false,
-    val sougenbiLimitCount: Int = 30,
-    val sougenbiLimitTimeMinutes: Int = 30,
-    val sougenbiBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var sougenbiLayer: String = "10"
+    var sougenbiSwitchSoulEnable: Boolean = false
+    var sougenbiSwitchGroupTeam: String = "-1,-1"
+    var sougenbiSwitchSoulEnableByName: Boolean = false
+    var sougenbiGroupName: String = ""
+    var sougenbiTeamName: String = ""
+    var sougenbiBuffEnable: Boolean = false
+    var sougenbiBuffGold50: Boolean = false
+    var sougenbiBuffGold100: Boolean = false
+    var sougenbiBuffExp50: Boolean = false
+    var sougenbiBuffExp100: Boolean = false
+    var sougenbiClass: String = "gold"
+    var sougenbiLockTeam: Boolean = false
+    var sougenbiLimitCount: Int = 30
+    var sougenbiLimitTimeMinutes: Int = 30
+    var sougenbiBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== DemonEncounter 鬼面来袭 ==========
-    val demonEncounterAutoBattle: Boolean = true,
-    val deSwitchSoulEnable: Boolean = false,
-    val deGroupName: String = "",
-    val deTeamName: String = "",
+    var demonEncounterAutoBattle: Boolean = true
+    var deSwitchSoulEnable: Boolean = false
+    var deGroupName: String = ""
+    var deTeamName: String = ""
 
     // ========== DemonRetreat 鬼退治 ==========
-    val demonRetreatAutoBattle: Boolean = true,
-    val demonRetreatSwitchSoulEnable: Boolean = false,
-    val demonRetreatSwitchGroupTeam: String = "-1,-1",
-    val demonRetreatSwitchSoulEnableByName: Boolean = false,
-    val demonRetreatGroupName: String = "",
-    val demonRetreatTeamName: String = "",
+    var demonRetreatAutoBattle: Boolean = true
+    var demonRetreatSwitchSoulEnable: Boolean = false
+    var demonRetreatSwitchGroupTeam: String = "-1,-1"
+    var demonRetreatSwitchSoulEnableByName: Boolean = false
+    var demonRetreatGroupName: String = ""
+    var demonRetreatTeamName: String = ""
 
     // ========== Duel 斗技 ==========
-    val duelNumberAttack: Int = 5,
-    val duelSwitchSoulEnable: Boolean = false,
-    val duelSwitchGroupTeam: String = "-1,-1",
-    val duelSwitchSoulEnableByName: Boolean = false,
-    val duelGroupName: String = "",
-    val duelTeamName: String = "",
-    val duelLimitTimeMinutes: Int = 30,
-    val duelTargetScore: Int = 1600,
-    val duelGreenEnable: Boolean = false,
-    val duelGreenMark: Int = 0,
+    var duelNumberAttack: Int = 5
+    var duelSwitchSoulEnable: Boolean = false
+    var duelSwitchGroupTeam: String = "-1,-1"
+    var duelSwitchSoulEnableByName: Boolean = false
+    var duelGroupName: String = ""
+    var duelTeamName: String = ""
+    var duelLimitTimeMinutes: Int = 30
+    var duelTargetScore: Int = 1600
+    var duelGreenEnable: Boolean = false
+    var duelGreenMark: Int = 0
 
     // ========== EvoZone 觉醒 ==========
-    val evoZoneLayer: String = "10",
-    val evoZoneUserStatus: String = "alone",
-    val evoZoneGreenEnable: Boolean = false,
-    val evoZoneSwitchSoulEnable: Boolean = false,
-    val evoZoneSwitchGroupTeam: String = "-1,-1",
-    val evoZoneSwitchSoulEnableByName: Boolean = false,
-    val evoZoneGroupName: String = "",
-    val evoZoneTeamName: String = "",
-    val evoZoneSoulBuffEnable: Boolean = false,
-    val evoZoneKirinType: String = "1",
-    val evoZoneLockTeam: Boolean = false,
-    val evoZoneDefaultInvite: Boolean = true,
-    val evoZoneLimitCount: Int = 30,
-    val evoZoneLimitTimeMinutes: Int = 30,
-    val evoZoneWaitTime: Int = 60,
-    val evoZoneInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig(),
-    val evoZoneBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var evoZoneLayer: String = "10"
+    var evoZoneUserStatus: String = "alone"
+    var evoZoneGreenEnable: Boolean = false
+    var evoZoneSwitchSoulEnable: Boolean = false
+    var evoZoneSwitchGroupTeam: String = "-1,-1"
+    var evoZoneSwitchSoulEnableByName: Boolean = false
+    var evoZoneGroupName: String = ""
+    var evoZoneTeamName: String = ""
+    var evoZoneSoulBuffEnable: Boolean = false
+    var evoZoneKirinType: String = "1"
+    var evoZoneLockTeam: Boolean = false
+    var evoZoneDefaultInvite: Boolean = true
+    var evoZoneLimitCount: Int = 30
+    var evoZoneLimitTimeMinutes: Int = 30
+    var evoZoneWaitTime: Int = 60
+    var evoZoneInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig()
+    var evoZoneBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== ExperienceYoukai 经验妖怪 ==========
-    val experienceYoukaiUserStatus: String = "alone",
-    val expYoukaiSwitchSoulEnable: Boolean = false,
-    val expYoukaiSwitchGroupTeam: String = "-1,-1",
-    val expYoukaiSwitchSoulEnableByName: Boolean = false,
-    val expYoukaiGroupName: String = "",
-    val expYoukaiTeamName: String = "",
-    val expYoukaiBuffExp50: Boolean = false,
-    val expYoukaiBuffExp100: Boolean = false,
+    var experienceYoukaiUserStatus: String = "alone"
+    var expYoukaiSwitchSoulEnable: Boolean = false
+    var expYoukaiSwitchGroupTeam: String = "-1,-1"
+    var expYoukaiSwitchSoulEnableByName: Boolean = false
+    var expYoukaiGroupName: String = ""
+    var expYoukaiTeamName: String = ""
+    var expYoukaiBuffExp50: Boolean = false
+    var expYoukaiBuffExp100: Boolean = false
 
     // ========== FallenSun 日轮之城 ==========
-    val fallenSunLayer: String = "10",
-    val fallenSunUserStatus: String = "alone",
-    val fallenSunSwitchSoulEnable: Boolean = false,
-    val fallenSunSwitchGroupTeam: String = "-1,-1",
-    val fallenSunSwitchSoulEnableByName: Boolean = false,
-    val fallenSunGroupName: String = "",
-    val fallenSunTeamName: String = "",
-    val fallenSunLockTeam: Boolean = false,
-    val fallenSunDefaultInvite: Boolean = true,
-    val fallenSunLimitCount: Int = 30,
-    val fallenSunLimitTimeMinutes: Int = 30,
-    val fallenSunWaitTime: Int = 60,
-    val fallenSunInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig(),
-    val fallenSunBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var fallenSunLayer: String = "10"
+    var fallenSunUserStatus: String = "alone"
+    var fallenSunSwitchSoulEnable: Boolean = false
+    var fallenSunSwitchGroupTeam: String = "-1,-1"
+    var fallenSunSwitchSoulEnableByName: Boolean = false
+    var fallenSunGroupName: String = ""
+    var fallenSunTeamName: String = ""
+    var fallenSunLockTeam: Boolean = false
+    var fallenSunDefaultInvite: Boolean = true
+    var fallenSunLimitCount: Int = 30
+    var fallenSunLimitTimeMinutes: Int = 30
+    var fallenSunWaitTime: Int = 60
+    var fallenSunInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig()
+    var fallenSunBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== GoldYoukai 金币妖怪 ==========
-    val goldYoukaiUserStatus: String = "alone",
-    val goldYoukaiSwitchSoulEnable: Boolean = false,
-    val goldYoukaiSwitchGroupTeam: String = "-1,-1",
-    val goldYoukaiSwitchSoulEnableByName: Boolean = false,
-    val goldYoukaiGroupName: String = "",
-    val goldYoukaiTeamName: String = "",
-    val goldYoukaiBuffGold50: Boolean = false,
-    val goldYoukaiBuffGold100: Boolean = false,
+    var goldYoukaiUserStatus: String = "alone"
+    var goldYoukaiSwitchSoulEnable: Boolean = false
+    var goldYoukaiSwitchGroupTeam: String = "-1,-1"
+    var goldYoukaiSwitchSoulEnableByName: Boolean = false
+    var goldYoukaiGroupName: String = ""
+    var goldYoukaiTeamName: String = ""
+    var goldYoukaiBuffGold50: Boolean = false
+    var goldYoukaiBuffGold100: Boolean = false
 
     // ========== Hunt 狩猎战 ==========
-    val huntGreenEnable: Boolean = false,
-    val huntKirinGroupTeam: String = "-1,-1",
-    val huntNetherworldGroupTeam: String = "-1,-1",
-    val huntKirinBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
-    val huntNetherworldBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
+    var huntGreenEnable: Boolean = false
+    var huntKirinGroupTeam: String = "-1,-1"
+    var huntNetherworldGroupTeam: String = "-1,-1"
+    var huntKirinBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+    var huntNetherworldBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
 
     // ========== Nian 年兽 ==========
-    val nianUserStatus: String = "alone",
-    val nianBattleConfig: GeneralBattleConfig = GeneralBattleConfig(),
-    val nianBuffGold50: Boolean = false,
-    val nianBuffGold100: Boolean = false,
+    var nianUserStatus: String = "alone"
+    var nianBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+    var nianBuffGold50: Boolean = false
+    var nianBuffGold100: Boolean = false
 
     // ========== Tako 超鬼王 ==========
-    val takoAutoBattle: Boolean = true,
-    val takoSwitchSoulEnable: Boolean = false,
-    val takoSwitchGroupTeam: String = "-1,-1",
-    val takoSwitchSoulEnableByName: Boolean = false,
-    val takoGroupName: String = "",
-    val takoTeamName: String = "",
-    val takoBuffEnable: Boolean = false,
-    val takoBuffGold50: Boolean = false,
-    val takoBuffGold100: Boolean = false,
-    val takoBuffExp50: Boolean = false,
-    val takoBuffExp100: Boolean = false,
+    var takoAutoBattle: Boolean = true
+    var takoSwitchSoulEnable: Boolean = false
+    var takoSwitchGroupTeam: String = "-1,-1"
+    var takoSwitchSoulEnableByName: Boolean = false
+    var takoGroupName: String = ""
+    var takoTeamName: String = ""
+    var takoBuffEnable: Boolean = false
+    var takoBuffGold50: Boolean = false
+    var takoBuffGold100: Boolean = false
+    var takoBuffExp50: Boolean = false
+    var takoBuffExp100: Boolean = false
 
     // ========== BondlingFairyland 契灵之境 ==========
-    val bondlingFairylandLayer: String = "10",
-    val bondlingFairylandUserStatus: String = "alone",
-    val bondlingSwitchSoulEnable: Boolean = false,
-    val bondlingSwitchGroupTeam: String = "-1,-1",
-    val bondlingSwitchSoulEnableByName: Boolean = false,
-    val bondlingGroupName: String = "",
-    val bondlingTeamName: String = "",
-    val bondlingStoneClassIndex: Int = 0,
-    val bondlingMode: String = "mode1",
-    val bondlingLimitCount: Int = 30,
-    val bondlingUserStatus: String = "alone",
-    val bondlingStoneEnable: Boolean = false,
-    val bondlingLimitTimeMinutes: Int = 30,
-    val bondlingWaitTimeMinutes: Int = 5,
+    var bondlingFairylandLayer: String = "10"
+    var bondlingFairylandUserStatus: String = "alone"
+    var bondlingSwitchSoulEnable: Boolean = false
+    var bondlingSwitchGroupTeam: String = "-1,-1"
+    var bondlingSwitchSoulEnableByName: Boolean = false
+    var bondlingGroupName: String = ""
+    var bondlingTeamName: String = ""
+    var bondlingStoneClassIndex: Int = 0
+    var bondlingMode: String = "mode1"
+    var bondlingLimitCount: Int = 30
+    var bondlingUserStatus: String = "alone"
+    var bondlingStoneEnable: Boolean = false
+    var bondlingLimitTimeMinutes: Int = 30
+    var bondlingWaitTimeMinutes: Int = 5
 
     // ========== TrueOrochi 真八岐大蛇 ==========
-    val trueOrochiLayer: String = "悲",
-    val trueOrochiCurrentSuccess: Int = 0,
-    val trueOrochiSwitchSoulEnable: Boolean = false,
-    val trueOrochiSwitchGroupTeam: String = "-1,-1",
-    val trueOrochiSwitchSoulEnableByName: Boolean = false,
-    val trueOrochiGroupName: String = "",
-    val trueOrochiTeamName: String = "",
-    val trueOrochiFindTrueOrochi: Boolean = true,
+    var trueOrochiLayer: String = "悲"
+    var trueOrochiCurrentSuccess: Int = 0
+    var trueOrochiSwitchSoulEnable: Boolean = false
+    var trueOrochiSwitchGroupTeam: String = "-1,-1"
+    var trueOrochiSwitchSoulEnableByName: Boolean = false
+    var trueOrochiGroupName: String = ""
+    var trueOrochiTeamName: String = ""
+    var trueOrochiFindTrueOrochi: Boolean = true
 
     // ========== WantedQuests 悬赏封印 ==========
-    val wantedQuestsAutoSearch: Boolean = true,
-    val wqSwitchSoulEnable: Boolean = false,
-    val wqSwitchGroupTeam: String = "-1,-1",
-    val wqSwitchSoulEnableByName: Boolean = false,
-    val wqGroupName: String = "",
-    val wqTeamName: String = "",
+    var wantedQuestsAutoSearch: Boolean = true
+    var wqSwitchSoulEnable: Boolean = false
+    var wqSwitchGroupTeam: String = "-1,-1"
+    var wqSwitchSoulEnableByName: Boolean = false
+    var wqGroupName: String = ""
+    var wqTeamName: String = ""
 
     // ========== EternitySea 永生之海 ==========
-    val eternitySeaLayer: String = "10",
-    val eternitySeaUserStatus: String = "alone",
-    val eternitySeaSwitchSoul1Enable: Boolean = false,
-    val eternitySeaSwitchGroupTeam1: String = "-1,-1",
-    val eternitySeaSwitchSoul1EnableByName: Boolean = false,
-    val eternitySeaGroupName1: String = "",
-    val eternitySeaTeamName1: String = "",
-    val eternitySeaSwitchSoul2Enable: Boolean = false,
-    val eternitySeaSwitchGroupTeam2: String = "-1,-1",
-    val eternitySeaSwitchSoul2EnableByName: Boolean = false,
-    val eternitySeaGroupName2: String = "",
-    val eternitySeaTeamName2: String = "",
-    val eternitySeaLockTeam: Boolean = false,
-    val eternitySeaDefaultInvite: Boolean = true,
-    val eternitySeaLimitCount: Int = 30,
-    val eternitySeaLimitTimeMinutes: Int = 30,
-    val eternitySeaWaitTime: Int = 60,
-    val eternitySeaInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig(),
-    val eternitySeaBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
-)
+    var eternitySeaLayer: String = "10"
+    var eternitySeaUserStatus: String = "alone"
+    var eternitySeaSwitchSoul1Enable: Boolean = false
+    var eternitySeaSwitchGroupTeam1: String = "-1,-1"
+    var eternitySeaSwitchSoul1EnableByName: Boolean = false
+    var eternitySeaGroupName1: String = ""
+    var eternitySeaTeamName1: String = ""
+    var eternitySeaSwitchSoul2Enable: Boolean = false
+    var eternitySeaSwitchGroupTeam2: String = "-1,-1"
+    var eternitySeaSwitchSoul2EnableByName: Boolean = false
+    var eternitySeaGroupName2: String = ""
+    var eternitySeaTeamName2: String = ""
+    var eternitySeaLockTeam: Boolean = false
+    var eternitySeaDefaultInvite: Boolean = true
+    var eternitySeaLimitCount: Int = 30
+    var eternitySeaLimitTimeMinutes: Int = 30
+    var eternitySeaWaitTime: Int = 60
+    var eternitySeaInviteConfig: GeneralInvite.InviteConfig = GeneralInvite.InviteConfig()
+    var eternitySeaBattleConfig: GeneralBattleConfig = GeneralBattleConfig()
+
+    /**
+     * 兼容 data class 的 copy() 用法：复制当前对象的所有属性到新实例
+     */
+    fun copy(): TaskConfig {
+        val new = TaskConfig()
+        // 通过反射复制所有 var 属性
+        for (field in TaskConfig::class.java.declaredFields) {
+            if (field.name.startsWith("Companion") || field.name.startsWith("$")) continue
+            try {
+                field.isAccessible = true
+                field.set(new, field.get(this))
+            } catch (_: Exception) {}
+        }
+        return new
+    }
+}
 
 enum class TaskType {
     EXPLORATION,
@@ -403,7 +408,6 @@ enum class TaskType {
     DAILY_TRIFLES,
     MYSTERY_SHOP,
     KITTY_SHOP,
-    // 战斗类任务
     OROCHI,
     AREA_BOSS,
     ABYSS_SHADOWS,

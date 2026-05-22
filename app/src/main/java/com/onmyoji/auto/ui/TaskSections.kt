@@ -121,20 +121,20 @@ fun TaskConfigSection(state: MainScreenState) {
             TaskType.EXPLORATION -> ExplorationConfig(config, onChange)
             TaskType.REALM_RAID -> RealmRaidConfig(config, onChange)
             TaskType.OROCHI -> GenericTaskConfig("八岐大蛇", config, listOf(
-                ConfigField("层数", config.orochiLayer) { onChange(config.copy(orochiLayer = it)) },
-                ConfigField("模式", config.orochiUserStatus) { onChange(config.copy(orochiUserStatus = it)) },
-                ConfigToggleData("御魂Buff", config.orochiSoulBuffEnable) { onChange(config.copy(orochiSoulBuffEnable = it)) },
+                ConfigField("层数", config.orochiLayer) { run { val c = config; c.orochiLayer = it; onChange(c) } },
+                ConfigField("模式", config.orochiUserStatus) { run { val c = config; c.orochiUserStatus = it; onChange(c) } },
+                ConfigToggleData("御魂Buff", config.orochiSoulBuffEnable) { run { val c = config; c.orochiSoulBuffEnable = it; onChange(c) } },
             ))
             TaskType.AREA_BOSS -> GenericTaskConfig("地域鬼王", config, listOf(
-                ConfigField("数量", config.areaBossNumber.toString()) { onChange(config.copy(areaBossNumber = it.toIntOrNull() ?: 3)) },
-                ConfigToggleData("收藏", config.areaBossUseCollect) { onChange(config.copy(areaBossUseCollect = it)) },
+                ConfigField("数量", config.areaBossNumber.toString()) { config.areaBossNumber = it.toIntOrNull() ?: 3; onChange(config) },
+                ConfigToggleData("收藏", config.areaBossUseCollect) { run { val c = config; c.areaBossUseCollect = it; onChange(c) } },
             ))
             TaskType.EVO_ZONE -> GenericTaskConfig("觉醒", config, listOf(
-                ConfigField("层数", config.evoZoneLayer) { onChange(config.copy(evoZoneLayer = it)) },
-                ConfigField("模式", config.evoZoneUserStatus) { onChange(config.copy(evoZoneUserStatus = it)) },
+                ConfigField("层数", config.evoZoneLayer) { run { val c = config; c.evoZoneLayer = it; onChange(c) } },
+                ConfigField("模式", config.evoZoneUserStatus) { run { val c = config; c.evoZoneUserStatus = it; onChange(c) } },
             ))
             else -> GenericTaskConfig(state.selectedTask.value.name, config, listOf(
-                ConfigField("战斗次数", config.limitTimeMinutes.toString()) { onChange(config.copy(limitTimeMinutes = it.toIntOrNull() ?: 30)) },
+                ConfigField("战斗次数", config.limitTimeMinutes.toString()) { config.limitTimeMinutes = it.toIntOrNull() ?: 30; onChange(config) },
             ))
         }
     }
@@ -146,7 +146,7 @@ fun ExplorationConfig(config: TaskConfig, onChange: (TaskConfig) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
             value = config.explorationLevel,
-            onValueChange = { onChange(config.copy(explorationLevel = it)) },
+            onValueChange = { run { val c = config; c.explorationLevel = it; onChange(c) } },
             label = { Text("探索章节") },
             modifier = Modifier.fillMaxWidth(),
             textStyle = androidx.compose.ui.text.TextStyle(color = Color.White)
@@ -154,13 +154,13 @@ fun ExplorationConfig(config: TaskConfig, onChange: (TaskConfig) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
                 value = config.minionsCount.toString(),
-                onValueChange = { onChange(config.copy(minionsCount = it.toIntOrNull() ?: 30)) },
+                onValueChange = { config.minionsCount = it.toIntOrNull() ?: 30; onChange(config) },
                 label = { Text("战斗次数") },
                 modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
                 value = config.limitTimeMinutes.toString(),
-                onValueChange = { onChange(config.copy(limitTimeMinutes = it.toIntOrNull() ?: 30)) },
+                onValueChange = { config.limitTimeMinutes = it.toIntOrNull() ?: 30; onChange(config) },
                 label = { Text("时间限制(分)") },
                 modifier = Modifier.weight(1f)
             )
@@ -175,13 +175,13 @@ fun RealmRaidConfig(config: TaskConfig, onChange: (TaskConfig) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
                 value = config.numberAttack.toString(),
-                onValueChange = { onChange(config.copy(numberAttack = it.toIntOrNull() ?: 30)) },
+                onValueChange = { config.numberAttack = it.toIntOrNull() ?: 30; onChange(config) },
                 label = { Text("最大挑战") },
                 modifier = Modifier.weight(1f)
             )
             OutlinedTextField(
                 value = config.orderAttack,
-                onValueChange = { onChange(config.copy(orderAttack = it)) },
+                onValueChange = { run { val c = config; c.orderAttack = it; onChange(c) } },
                 label = { Text("勋章优先级") },
                 modifier = Modifier.weight(1f)
             )
@@ -189,12 +189,12 @@ fun RealmRaidConfig(config: TaskConfig, onChange: (TaskConfig) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = config.exitFour,
-                onClick = { onChange(config.copy(exitFour = !config.exitFour)) },
+                onClick = { run { val c = config; c.exitFour = !config.exitFour; onChange(c) } },
                 label = { Text("退四打九") }
             )
             FilterChip(
                 selected = config.threeRefresh,
-                onClick = { onChange(config.copy(threeRefresh = !config.threeRefresh)) },
+                onClick = { run { val c = config; c.threeRefresh = !config.threeRefresh; onChange(c) } },
                 label = { Text("三胜刷新") }
             )
         }

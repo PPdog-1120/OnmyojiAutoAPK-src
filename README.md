@@ -1,164 +1,87 @@
-# OnmyojiAuto - 阴阳师自动化 APK
+# ExplorationTask 修复方案
 
-> 从 [OnmyojiAutoScripts](https://gitee.com/PPdog-1120/OnmyojiAutoScripts) 提取核心逻辑，重构为原生 Android 应用。
+## 问题根因
 
-## 功能
+`ExplorationTask` 继承 `BaseTask`，没有使用项目中已有的 `GameUi` 页面导航组件。
 
-- **探索** — 自动选章节、UP怪优先、Boss/小怪战斗循环、单人/队长/队员模式
-- **个人突破** — 勋章优先级选择、退四打九、失败刷新/重试策略、呱太检测
+`navigateToExploration()` 只调用了 `waitUntilAppear(I_CHECK_EXPLORATION, 15000)` — 这是**被动等待**，
+不是主动导航。15 秒超时后不管有没有到达探索页面都会继续执行，导致"导航到探索页面"的日志打出来，
+实际还在原地。
 
-## 技术架构
+## 代码变更摘要
+
+### `ExplorationTask.kt` — 唯一需要改的文件
+
+| 位置 | 原代码 | 修改后 |
+|------|--------|--------|
+| **继承** | `BaseTask(context, device, config)` | `GameUi(context, device, config)` |
+| **导航** | `waitUntilAppear(I_CHECK_EXPLORATION, 15000)` | `uiGotoPage(pageExploration)` — BFS 最短路径主动导航 |
+| **UNKNOWN** | `delay(500)` 直接跳过 | 随机点击 + 弹窗关闭 + 页面识别恢复 |
+| **run()** | 直接 runSolo | preProcess → runSolo → postProcess |
+
+### 不需要改的文件
+
+- `GameUi.kt` — 已有完整的页面导航系统，直接复用
+- `Page.kt` — 已有页面注册和 BFS 路径规划
+- `TaskManager.kt` — 构造函数签名未变，无需修改
+- `BaseTask.kt` — 不变
+- `DeviceController.kt` — 不变
+
+## 前置检查
+
+### 1. 图片资源
+
+确认 `app/src/main/assets/game_ui/page/` 目录下存在：
 
 ```
-┌─────────────────────────────────────────┐
-│              Jetpack Compose UI         │
-│     (任务选择 / 配置 / 日志 / 控制)      │
-├─────────────────────────────────────────┤
-│            TaskManager (调度器)          │
-│     ExplorationTask │ RealmRaidTask     │
-├─────────────────────────────────────────┤
-│     ImageMatcher (OpenCV 模板匹配)       │
-│     DeviceController (手势分发)          │
-├─────────────────────────────────────────┤
-│  AccessibilityService │ MediaProjection │
-│     (无障碍服务)       (屏幕截图)        │
-└─────────────────────────────────────────┘
+page_main_goto_exploration.png   ← 主页上的"探索"按钮截图
+page_check_main.png              ← 主页标识
+page_check_exploration.png       ← 探索页面标识（章节列表页）
+page_back_yollow.png             ← 黄色返回按钮
 ```
 
-## 环境要求
+这些文件在 GameUi.kt 中已被引用（`RuleImage` 的 assetPath）。如果 APK 编译时没报资源找不到，
+说明已经存在。
 
-| 组件 | 版本 |
-|------|------|
-| Android Studio | Hedgehog+ |
-| JDK | 17+ |
-| Android SDK | 34 |
-| Gradle | 8.5 |
-| 设备 | Android 8.0+ (API 26+) |
-
-## 构建步骤
-
-### 方式一：Android Studio（推荐）
-
-1. 用 Android Studio 打开项目目录
-2. 等待 Gradle Sync 完成
-3. 点击 Build → Build APK
-4. APK 输出在 `app/build/outputs/apk/`
-
-### 方式二：命令行
+### 2. 编译验证
 
 ```bash
-# 确保已设置环境变量
-export ANDROID_HOME=$HOME/Android/Sdk
-
-# Debug 版本
-./build.sh --debug
-
-# Release 版本
-./build.sh --release
-
-# 或直接用 gradle
+cd /path/to/OnmyojiAutoAPK-src
 ./gradlew assembleDebug
 ```
 
-## 使用说明
-
-### 1. 安装 APK
-
-```bash
-adb install app/build/outputs/apk/debug/app-debug.apk
+如果报 `Unresolved reference: GameUi`，检查 import：
+```kotlin
+import com.onmyoji.auto.engine.component.GameUi
 ```
 
-### 2. 授权权限
+### 3. 功能验证
 
-打开应用后需要授权两个权限：
-
-- **无障碍服务** — 用于自动化点击/滑动
-  - 设置 → 无障碍 → 阴阳师自动 → 开启
-- **屏幕截图** — 用于屏幕画面识别
-  - 点击"授权"按钮 → 允许屏幕录制
-
-### 3. 配置任务
-
-**探索配置：**
-- 章节：选择要探索的章节（默认第二十八章）
-- 模式：单人/队长/队员
-- 战斗次数：最大战斗次数
-- 时间限制：最大运行时间
-- UP类型：优先打哪种UP怪
-
-**个人突破配置：**
-- 最大挑战次数
-- 勋章优先级：如 `5>4>3>2>1>0`
-- 退四打九：对第一个目标先进出4次再打9次
-- 失败策略：退出/继续/刷新
-
-### 4. 开始运行
-
-1. 打开阴阳师游戏
-2. 切换到目标界面（探索/突破页面）
-3. 回到本应用，点击"开始"
-4. 观察日志输出
-
-## 项目结构
+替换后日志应该变成：
 
 ```
-app/src/main/
-├── java/com/onmyoji/auto/
-│   ├── engine/               # 核心引擎
-│   │   ├── ImageMatcher.kt   # OpenCV 图像匹配
-│   │   ├── DeviceController.kt # 手势/点击控制
-│   │   ├── RuleImage.kt      # 匹配规则定义
-│   │   ├── BaseTask.kt       # 任务基类
-│   │   ├── ExplorationTask.kt # 探索任务
-│   │   ├── RealmRaidTask.kt  # 个人突破任务
-│   │   └── TaskManager.kt    # 任务调度
-│   ├── service/              # 系统服务
-│   │   ├── AutomationService.kt  # 无障碍服务
-│   │   └── ScreenCaptureService.kt # 截图服务
-│   ├── ui/                   # 界面
-│   │   └── MainActivity.kt   # Compose 主界面
-│   └── model/                # 数据模型
-│       └── TaskConfig.kt     # 配置类
-├── assets/                   # 匹配图片资源
-│   ├── exploration/          # 探索截图 (47个)
-│   └── realm_raid/           # 突破截图 (40个)
-└── res/                      # Android 资源
+[HH:mm:ss] === 探索任务开始 ===
+[HH:mm:ss] 章节: 第二十八章
+[HH:mm:ss] 绘卷模式: 开启，阈值=25
+[HH:mm:ss] 预处理：导航到探索页面...
+[HH:mm:ss] UI get current page
+[HH:mm:ss] UI: page_main                          ← 识别到在主页
+[HH:mm:ss] UI goto page_exploration
+[HH:mm:ss] page_main -> page_exploration           ← BFS 规划路径
+[HH:mm:ss] Page switch: page_main -> page_exploration
+[HH:mm:ss] Wait appear and operate ...             ← 点击探索按钮
+[HH:mm:ss] Page arrived page_exploration           ← 到达探索页面 ✓
+[HH:mm:ss] 探索启动
+[HH:mm:ss] 选择章节: 第二十八章
+[HH:mm:ss] 战斗，第 1 次
+...
 ```
 
-## 与原项目对比
+## 风险评估
 
-| 维度 | OAS (Python) | OnmyojiAuto (APK) |
-|------|-------------|-------------------|
-| 运行环境 | PC + ADB | 手机本地 |
-| 控制方式 | ADB 命令 | 无障碍服务手势 |
-| 截图方式 | ADB screencap | MediaProjection |
-| 图像匹配 | OpenCV Python | OpenCV Android |
-| 依赖 | Python 3.10+ | Android 8.0+ |
-| 安装方式 | pip/EXE | APK |
-
-## 常见问题
-
-### Q: 无障碍服务无法开启？
-
-部分手机需要额外权限：
-- 小米：设置 → 更多设置 → 无障碍 → 已下载的服务
-- 华为：设置 → 无障碍 → 已安装的服务
-- OPPO/vivo：设置 → 其他设置 → 无障碍
-
-### Q: 截图服务被杀？
-
-在手机设置中将本应用加入电池白名单/自启动白名单。
-
-### Q: 图像匹配不准？
-
-1. 确保游戏分辨率为 1280×720
-2. 确保游戏为横屏模式
-3. 如使用模拟器，关闭 GPU 渲染
-
-## 免责声明
-
-本软件开源、免费，仅供学习交流使用。使用本软件产生的所有问题与本项目无关。
-
-## 许可证
-
-GPL-3.0
+| 风险 | 等级 | 说明 |
+|------|------|------|
+| 编译失败 | 低 | GameUi/Page 组件已存在，只是 ExplorationTask 没接入 |
+| 导航失败 | 低 | 30 秒超时保护，失败后会 warn 但从当前页面继续 |
+| 资源冲突 | 无 | GameUi 和 ExplorationTask 的 RuleImage 是独立的 private 字段 |
+| 行为变化 | 低 | 探索主循环逻辑完全不变，只改了入口导航 |

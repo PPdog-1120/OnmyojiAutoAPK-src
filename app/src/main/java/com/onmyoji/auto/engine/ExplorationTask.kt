@@ -2,26 +2,31 @@ package com.onmyoji.auto.engine
 
 import kotlinx.coroutines.delay
 import android.content.Context
+import com.onmyoji.auto.engine.component.GameUi
 import com.onmyoji.auto.model.TaskConfig
 
 /**
- * 探索任务 — 保留 OAS 核心逻辑
+ * 探索任务 — 修复版
  *
- * 流程：场景识别 → 章节选择 → 战斗循环（小怪/Boss） → 绘卷检测 → 退出
+ * 改动点：
+ * 1. 继承 GameUi 获得页面导航能力（BFS 最短路径）
+ * 2. navigateToExploration() 改为主动导航，而非被动等待
+ * 3. 新增 UNKNOWN 场景处理（随机点击恢复）
+ * 4. 新增 preProcess() / postProcess()
  */
 class ExplorationTask(
     context: Context,
     device: DeviceController,
     config: TaskConfig
-) : BaseTask(context, device, config) {
+) : GameUi(context, device, config) {
 
     // ========== 资源定义 ==========
-    // 场景识别
-    private val I_CHECK_EXPLORATION = RuleImage("check_exploration",
+    // 场景识别（探索大世界标识 — 含标题栏）
+    private val I_CHECK_EXPLORATION_WORLD = RuleImage("check_exploration_world",
         "exploration/res_exploration_title.png",
         intArrayOf(1133, 124, 47, 43), intArrayOf(1100, 100, 180, 100), 0.7f)
 
-    // 探索按钮
+    // 探索按钮（章节列表中的"探索"入口）
     private val I_EXPLORATION_CLICK = RuleImage("exploration_click",
         "exploration/res_e_exploration_click.png",
         intArrayOf(1076, 601, 96, 42), intArrayOf(939, 555, 307, 127), 0.8f)
@@ -93,11 +98,24 @@ class ExplorationTask(
         "exploration/res_exp_arrow_right.png",
         intArrayOf(1240, 117, 24, 21), intArrayOf(1178, 74, 100, 100), 0.8f)
 
+    // 安全随机点击区域（用于 UNKNOWN 场景恢复）
+    private val C_SAFE_RANDOM = RuleClick("safe_random",
+        intArrayOf(640, 360, 100, 100))
+
     private var minionsCnt = 0
     private var searchFailCnt = 0
-
-    // 绘卷模式：是否已触发（防止重复触发）
     private var scrollsTriggered = false
+
+    // ========== 场景枚举 ==========
+    private enum class Scene {
+        WORLD,       // 探索大世界（章节列表）
+        ENTRANCE,    // 入口弹窗
+        MAIN,        // 探索内部（有小怪/Boss）
+        BATTLE,      // 战斗中
+        UNKNOWN      // 未知
+    }
+
+    // ========== 主入口 ==========
 
     override suspend fun run() {
         log("=== 探索任务开始 ===")
@@ -106,26 +124,55 @@ class ExplorationTask(
             log("绘卷模式: 开启，阈值=${config.scrollsThreshold}")
         }
 
-        // 导航到探索页面
-        navigateToExploration()
+        // ★ 修复：先做预处理（导航到探索页面）
+        preProcess()
 
         // 执行探索
         runSolo()
 
+        // 后处理
+        postProcess()
+
         log("=== 探索完成，战斗 $minionsCnt 次 ===")
     }
 
-    private suspend fun navigateToExploration() {
-        log("导航到探索页面...")
-        waitUntilAppear(I_CHECK_EXPLORATION, 15000)
+    // ========== 预处理 / 后处理 ==========
+
+    /**
+     * 预处理 — 对应 Python 版 pre_process()
+     *
+     * 核心修复：使用 GameUi 的页面导航系统，主动走到探索页面
+     */
+    private suspend fun preProcess() {
+        log("预处理：导航到探索页面...")
+
+        // ★★★ 关键修复：使用 BFS 路径导航 ★★★
+        // 会自动识别当前在哪个页面，然后沿着最短路径点击跳转
+        // 例如：主页 → 点击"探索"按钮 → 到达探索页面
+        val arrived = uiGotoPage(pageExploration, timeout = 30_000)
+        if (!arrived) {
+            log("警告：未能通过自动导航到达探索页面，尝试从当前页面继续")
+        }
     }
 
     /**
-     * 探索主循环
+     * 后处理 — 对应 Python 版 post_process()
      */
+    private suspend fun postProcess() {
+        // 尝试返回主页
+        try {
+            uiGoto(pageMain, timeout = 15_000)
+        } catch (e: Exception) {
+            log("后处理：返回主页失败，忽略")
+        }
+    }
+
+    // ========== 探索主循环 ==========
+
     private suspend fun runSolo() {
         log("探索启动")
         searchFailCnt = 0
+        var randomClickCnt = 0
 
         while (true) {
             val img = screenshot() ?: continue
@@ -133,6 +180,7 @@ class ExplorationTask(
 
             when (scene) {
                 Scene.WORLD -> {
+                    randomClickCnt = 0
                     // 展开箭头
                     appearThenClick(I_ARROW_LEFT, img)
                     // 宝箱
@@ -146,7 +194,13 @@ class ExplorationTask(
                     // 选择章节
                     selectChapter()
                 }
+                Scene.ENTRANCE -> {
+                    randomClickCnt = 0
+                    if (checkExit()) return
+                    appearThenClick(I_EXPLORATION_CLICK, img)
+                }
                 Scene.MAIN -> {
+                    randomClickCnt = 0
                     // 战后奖励
                     if (I_BATTLE_REWARD.match(img, context).matched) {
                         appearThenClick(I_BATTLE_REWARD, img)
@@ -181,17 +235,115 @@ class ExplorationTask(
                     }
                 }
                 Scene.BATTLE -> {
+                    randomClickCnt = 0
                     log("等待战斗结束...")
                     delay(3000)
                 }
-                else -> delay(500)
+                Scene.UNKNOWN -> {
+                    // ★ 修复：UNKNOWN 场景处理（原版直接 delay 500 跳过）
+                    // 尝试随机点击恢复
+                    if (randomClickCnt >= 3) {
+                        log("UNKNOWN 场景持续存在，尝试关闭弹窗...")
+                        // 尝试点击已知的关闭按钮
+                        if (appearThenClick(I_RED_CLOSE, img)) {
+                            delay(1000)
+                            randomClickCnt = 0
+                            continue
+                        }
+                        // 尝试 GameUi 的页面识别，看能否恢复
+                        val currentPage = uiGetCurrentPage()
+                        if (currentPage != null) {
+                            log("识别到页面: ${currentPage.name}，重新进入主循环")
+                            randomClickCnt = 0
+                            continue
+                        }
+                        log("无法恢复，放弃")
+                        return
+                    }
+                    log("未知场景，随机点击尝试恢复 (${randomClickCnt + 1}/3)")
+                    val (rx, ry) = C_SAFE_RANDOM.coord()
+                    device.click(rx, ry)
+                    delay(1500)
+                    randomClickCnt++
+                }
             }
         }
     }
 
-    /**
-     * 绘卷模式：检测突破票数量，达到阈值时暂停探索去打突破
-     */
+    // ========== 场景识别 ==========
+
+    private fun detectScene(img: android.graphics.Bitmap): Scene {
+        // 探索大世界：有探索标题，但没有设置按钮
+        if (I_CHECK_EXPLORATION_WORLD.match(img, context).matched &&
+            !I_SETTINGS_BUTTON.match(img, context).matched) {
+            return Scene.WORLD
+        }
+        // 入口弹窗：有"探索"按钮
+        if (I_EXPLORATION_CLICK.match(img, context).matched) return Scene.ENTRANCE
+        // 探索内部：有设置按钮或自动轮换
+        if (I_SETTINGS_BUTTON.match(img, context).matched ||
+            I_AUTO_ROTATE_ON.match(img, context).matched ||
+            I_AUTO_ROTATE_OFF.match(img, context).matched) {
+            return Scene.MAIN
+        }
+        // 也可以用 GameUi 的页面识别来辅助判断
+        if (uiPageAppear(pageExploration, img)) return Scene.WORLD
+
+        return Scene.UNKNOWN
+    }
+
+    // ========== 章节选择 ==========
+
+    private suspend fun selectChapter() {
+        log("选择章节: ${config.explorationLevel}")
+        appearThenClick(I_EXPLORATION_CLICK, interval = 2000)
+    }
+
+    // ========== 战斗目标查找 ==========
+
+    private fun findUpFight(img: android.graphics.Bitmap): RuleImage? {
+        return if (I_NORMAL_BATTLE.match(img, context).matched) I_NORMAL_BATTLE else null
+    }
+
+    // ========== 发起战斗 ==========
+
+    private suspend fun fire(rule: RuleImage, img: android.graphics.Bitmap? = null): Boolean {
+        appearThenClick(rule, img)
+        delay(3000)
+        minionsCnt++
+        currentCount = minionsCnt
+        return true
+    }
+
+    // ========== 退出探索 ==========
+
+    private suspend fun quitExplore() {
+        log("退出探索")
+        repeat(5) {
+            val img = screenshot() ?: return
+            if (I_CHECK_EXPLORATION_WORLD.match(img, context).matched) return
+            appearThenClick(I_EXIT_CONFIRM, img)
+            appearThenClick(I_RED_CLOSE, img)
+            delay(1000)
+        }
+    }
+
+    // ========== 退出条件检查 ==========
+
+    private suspend fun checkExit(): Boolean {
+        if (minionsCnt >= config.minionsCount) {
+            log("战斗次数达标")
+            return true
+        }
+        if (isTimeUp(config.limitTimeMinutes)) {
+            log("时间限制到达")
+            return true
+        }
+        return false
+    }
+
+    // ========== 绘卷模式 ==========
+
     private suspend fun checkScrolls(img: android.graphics.Bitmap): Boolean {
         if (!config.scrollsEnable) return false
         if (scrollsTriggered) return false
@@ -224,74 +376,23 @@ class ExplorationTask(
         return false
     }
 
-    /**
-     * 场景识别
-     */
-    private fun detectScene(img: android.graphics.Bitmap): Scene {
-        if (I_CHECK_EXPLORATION.match(img, context).matched &&
-            !I_SETTINGS_BUTTON.match(img, context).matched) {
-            return Scene.WORLD
-        }
-        if (I_EXPLORATION_CLICK.match(img, context).matched) return Scene.ENTRANCE
-        if (I_SETTINGS_BUTTON.match(img, context).matched ||
-            I_AUTO_ROTATE_ON.match(img, context).matched ||
-            I_AUTO_ROTATE_OFF.match(img, context).matched) {
-            return Scene.MAIN
-        }
-        return Scene.UNKNOWN
-    }
+    // ========== 辅助方法 ==========
 
     /**
-     * 选择章节
+     * 出现则点击 — 覆盖 BaseTask 版本，保持与原有逻辑兼容
      */
-    private suspend fun selectChapter() {
-        log("选择章节: ${config.explorationLevel}")
-        appearThenClick(I_EXPLORATION_CLICK, interval = 2000)
-    }
-
-    /**
-     * 寻找战斗目标
-     */
-    private fun findUpFight(img: android.graphics.Bitmap): RuleImage? {
-        return if (I_NORMAL_BATTLE.match(img, context).matched) I_NORMAL_BATTLE else null
-    }
-
-    /**
-     * 发起战斗
-     */
-    private suspend fun fire(rule: RuleImage, img: android.graphics.Bitmap? = null): Boolean {
-        appearThenClick(rule, img)
-        delay(3000)
-        minionsCnt++
-        currentCount = minionsCnt
-        return true
-    }
-
-    /**
-     * 退出探索
-     */
-    private suspend fun quitExplore() {
-        log("退出探索")
-        repeat(5) {
-            val img = screenshot() ?: return
-            if (I_CHECK_EXPLORATION.match(img, context).matched) return
-            appearThenClick(I_EXIT_CONFIRM, img)
-            appearThenClick(I_RED_CLOSE, img)
-            delay(1000)
-        }
-    }
-
-    private suspend fun checkExit(): Boolean {
-        if (minionsCnt >= config.minionsCount) {
-            log("战斗次数达标")
-            return true
-        }
-        if (isTimeUp(config.limitTimeMinutes)) {
-            log("时间限制到达")
+    private suspend fun appearThenClick(
+        rule: RuleImage,
+        screenshot: android.graphics.Bitmap? = null,
+        interval: Long = 1000
+    ): Boolean {
+        val img = screenshot ?: this.screenshot() ?: return false
+        val result = rule.match(img, context)
+        if (result.matched) {
+            device.click(result.centerX, result.centerY)
+            delay(interval)
             return true
         }
         return false
     }
-
-    private enum class Scene { WORLD, ENTRANCE, MAIN, BATTLE, UNKNOWN }
 }

@@ -431,5 +431,10 @@ enum class TaskType {
     BONDLING_FAIRYLAND,
     TRUE_OROCHI,
     WANTED_QUESTS,
-    ETERNITY_SEA
+    ETERNITY_SEA,
+    // 新增任务
+    RESTART,
+    DOKAN,
+    KEKKAI_UTILIZE,
+    KEKKAI_ACTIVATION
 }

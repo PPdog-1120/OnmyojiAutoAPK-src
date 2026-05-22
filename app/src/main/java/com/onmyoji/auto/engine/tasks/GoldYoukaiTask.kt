@@ -28,6 +28,7 @@ class GoldYoukaiTask(context: Context, device: DeviceController, config: TaskCon
     private val switchSoul = SwitchSoul(context, device, config)
     private val generalRoom = GeneralRoom(context, device, config)
     private val generalBuff = GeneralBuff(context, device, config)
+    private val teamHelper = TeamTaskHelper(context, device, config)
 
     override suspend fun run() {
         log("=== 金币妖怪任务开始 ===")
@@ -69,7 +70,27 @@ class GoldYoukaiTask(context: Context, device: DeviceController, config: TaskCon
         log("=== 金币妖怪完成 ===")
     }
 
-    private fun isInRoom(): Boolean = true
-    private fun checkZones(name: String) {}
-    private fun clickFire() {}
+    // 挑战按钮
+    private val I_FIRE = RuleImage("fire", "general_invite/gi/gi_fire.png",
+        intArrayOf(1179, 602, 81, 74), intArrayOf(1179, 602, 81, 74), 0.8f)
+
+    private fun isInRoom(): Boolean { val img = screenshot() ?: return false; return I_ADD_5_1.match(img, context).matched || I_CREATE_ROOM.match(img, context).matched }
+    private val I_CREATE_ROOM = RuleImage("create_room", "general_room/gr/gr_create_room.png",
+        intArrayOf(985, 600, 177, 58), intArrayOf(396, 569, 813, 100), 0.8f)
+
+    private suspend fun checkZones(name: String) {
+        log("Check zones: $name")
+        // 通过 generalRoom 的 checkZones 实现
+        generalRoom.checkZones(name)
+    }
+
+    private suspend fun clickFire() {
+        log("Click fire")
+        while (true) {
+            val img = screenshot() ?: continue
+            if (!isInRoom()) break
+            if (appearThenClick(I_FIRE, img, 1000)) continue
+            break
+        }
+    }
 }

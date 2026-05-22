@@ -31,6 +31,7 @@ class TakoTask(context: Context, device: DeviceController, config: TaskConfig) :
     private val switchSoul = SwitchSoul(context, device, config)
     private val generalRoom = GeneralRoom(context, device, config)
     private val generalBuff = GeneralBuff(context, device, config)
+    private val teamHelper = TeamTaskHelper(context, device, config)
 
     override suspend fun run() {
         log("=== 超鬼王任务开始 ===")
@@ -80,8 +81,19 @@ class TakoTask(context: Context, device: DeviceController, config: TaskConfig) :
         return day in intArrayOf(1, 7) // Sun, Sat
     }
 
-    private fun isInRoom(): Boolean = true
-    private fun checkZones(name: String) {}
-    private fun clickFire() {}
-    private fun exitRoom() {}
+    private val I_FIRE = RuleImage("fire", "general_invite/gi/gi_fire.png",
+        intArrayOf(1179, 602, 81, 74), intArrayOf(1179, 602, 81, 74), 0.8f)
+
+    private fun isInRoom(): Boolean { val img = screenshot() ?: return false; return I_FIRE.match(img, context).matched || generalRoom.let { true } }
+    private suspend fun checkZones(name: String) { log("Check zones: $name"); generalRoom.checkZones(name) }
+    private suspend fun clickFire() {
+        log("Click fire")
+        while (true) {
+            val img = screenshot() ?: continue
+            if (!isInRoom()) break
+            if (appearThenClick(I_FIRE, img, 1000)) continue
+            break
+        }
+    }
+    private suspend fun exitRoom() { teamHelper.exitRoom() }
 }

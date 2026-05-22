@@ -114,6 +114,11 @@ class TaskManager(private val context: Context) {
                     TaskType.TRUE_OROCHI -> com.onmyoji.auto.engine.tasks.TrueOrochiTask(context, controller, config)
                     TaskType.WANTED_QUESTS -> com.onmyoji.auto.engine.tasks.WantedQuestsTask(context, controller, config)
                     TaskType.ETERNITY_SEA -> com.onmyoji.auto.engine.tasks.EternitySeaTask(context, controller, config)
+                    // 新增任务
+                    TaskType.RESTART -> com.onmyoji.auto.engine.tasks.RestartTask(context, controller, config)
+                    TaskType.DOKAN -> com.onmyoji.auto.engine.tasks.DokanTask(context, controller, config)
+                    TaskType.KEKKAI_UTILIZE -> com.onmyoji.auto.engine.tasks.KekkaiUtilizeTask(context, controller, config)
+                    TaskType.KEKKAI_ACTIVATION -> com.onmyoji.auto.engine.tasks.KekkaiActivationTask(context, controller, config)
                 }
                 // 注入调度回调
                 task.scheduleCallback = { taskName, nextRunMs ->
@@ -215,6 +220,10 @@ class TaskManager(private val context: Context) {
                 TaskType.TRUE_OROCHI -> "true_orochi"
                 TaskType.WANTED_QUESTS -> "wanted_quests"
                 TaskType.ETERNITY_SEA -> "eternity_sea"
+                TaskType.RESTART -> "restart"
+                TaskType.DOKAN -> "dokan"
+                TaskType.KEKKAI_UTILIZE -> "kekkai_utilize"
+                TaskType.KEKKAI_ACTIVATION -> "kekkai_activation"
             }
             val file = File(logDir, "${taskName}_${ts}.log")
             currentLogFile = file

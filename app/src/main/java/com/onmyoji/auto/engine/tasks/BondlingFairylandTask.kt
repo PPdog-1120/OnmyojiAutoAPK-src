@@ -228,7 +228,15 @@ class BondlingFairylandTask(context: Context, device: DeviceController, config: 
         }
     }
 
-    private fun isInRoom(): Boolean = true
+    // 通用战斗准备标识
+    private val I_PREPARE_HIGHLIGHT = RuleImage("prepare_highlight", "general_battle/gb/gb_prepare_highlight.png",
+        intArrayOf(1128, 536, 100, 100), intArrayOf(1110, 500, 169, 200), 0.8f)
+
+    private fun isInRoom(): Boolean {
+        val img = screenshot() ?: return false
+        return I_BALL_FIRE.match(img, context).matched || I_BALL_HELP.match(img, context).matched ||
+            I_PREPARE_HIGHLIGHT.match(img, context).matched
+    }
 
     private suspend fun uiClick(clickRule: RuleClick, stopRule: RuleImage) {
         while (true) { val img = screenshot() ?: continue; if (stopRule.match(img, context).matched) break; val (x, y) = clickRule.coord(); device.click(x, y); delay(800) }

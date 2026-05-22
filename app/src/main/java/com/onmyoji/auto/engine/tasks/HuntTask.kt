@@ -42,6 +42,7 @@ class HuntTask(context: Context, device: DeviceController, config: TaskConfig) :
     private val generalBattle = GeneralBattle(context, device, config)
     private val gameUi = GameUi(context, device, config)
     private val switchSoul = SwitchSoul(context, device, config)
+    private val teamHelper = TeamTaskHelper(context, device, config)
 
     private var kirinDay = true
 
@@ -121,8 +122,16 @@ class HuntTask(context: Context, device: DeviceController, config: TaskConfig) :
     private val I_FIRE = RuleImage("fire", "tasks/GeneralRoom/res/res_fire.png",
         intArrayOf(0, 0, 100, 100), intArrayOf(0, 0, 1280, 720), 0.8f)
 
-    private fun isInRoom(): Boolean = true
-    private fun clickFire() {}
+    private fun isInRoom(): Boolean { val img = screenshot() ?: return false; return I_FIRE.match(img, context).matched }
+    private suspend fun clickFire() {
+        log("Click fire")
+        while (true) {
+            val img = screenshot() ?: continue
+            if (!isInRoom()) break
+            if (appearThenClick(I_FIRE, img, 1000)) continue
+            break
+        }
+    }
     private suspend fun uiClickUntilDisappear(rule: RuleImage) {
         while (true) { val img = screenshot() ?: break; if (!rule.match(img, context).matched) break; appearThenClick(rule, img, 1000) }
     }

@@ -37,6 +37,7 @@ class FallenSunTask(
     private val switchSoul = SwitchSoul(context, device, config)
     private val generalInvite = GeneralInvite(context, device, config)
     private val generalRoom = GeneralRoom(context, device, config)
+    private val teamHelper = TeamTaskHelper(context, device, config)
 
     override suspend fun run() {
         log("=== 日轮之城任务开始 ===")
@@ -111,12 +112,12 @@ class FallenSunTask(
 
     private fun isInFallenSun(): Boolean { val img = screenshot() ?: return false; return I_FALLEN_SUN_FIRE.match(img, context).matched }
     private fun isInRoom(): Boolean { val img = screenshot() ?: return false; return I_FORM_TEAM.match(img, context).matched }
-    private fun isRoomDead(): Boolean = false
-    private fun isHomeOrExplore(): Boolean = false
-    private fun exitRoom() {}
-    private fun exitTeam() {}
-    private fun exitBattle() {}
-    private fun checkAndInvite(defaultInvite: Boolean): Boolean = false
-    private fun checkThenAccept(): Boolean = false
-    private fun waitBattle(waitTime: Int): Boolean = false
+    private fun isRoomDead(): Boolean = teamHelper.isRoomDead { screenshot() }
+    private fun isHomeOrExplore(): Boolean = teamHelper.isHomeOrExplore { screenshot() }
+    private suspend fun exitRoom() { teamHelper.exitRoom() }
+    private suspend fun exitTeam() { teamHelper.exitTeam() }
+    private suspend fun exitBattle(): Boolean = teamHelper.exitBattle { screenshot() }
+    private suspend fun checkAndInvite(defaultInvite: Boolean): Boolean = teamHelper.checkAndInvite(defaultInvite)
+    private suspend fun checkThenAccept(): Boolean = teamHelper.checkThenAccept()
+    private suspend fun waitBattle(waitTime: Int): Boolean = teamHelper.waitBattle(waitTime)
 }

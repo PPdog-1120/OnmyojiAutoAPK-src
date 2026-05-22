@@ -27,6 +27,8 @@ class NianTask(context: Context, device: DeviceController, config: TaskConfig) :
     private val generalBattle = GeneralBattle(context, device, config)
     private val gameUi = GameUi(context, device, config)
     private val generalBuff = GeneralBuff(context, device, config)
+    private val generalRoom = GeneralRoom(context, device, config)
+    private val teamHelper = TeamTaskHelper(context, device, config)
 
     override suspend fun run() {
         log("=== 年兽任务开始 ===")
@@ -75,7 +77,10 @@ class NianTask(context: Context, device: DeviceController, config: TaskConfig) :
         return null
     }
 
-    private fun isInRoom(): Boolean = true
-    private fun waitBattle(waitTimeSec: Int): Boolean = false
-    private fun checkZones(name: String) {}
+    private val I_CREATE_ROOM = RuleImage("create_room", "general_room/gr/gr_create_room.png",
+        intArrayOf(985, 600, 177, 58), intArrayOf(396, 569, 813, 100), 0.8f)
+
+    private fun isInRoom(): Boolean { val img = screenshot() ?: return false; return I_CREATE_ROOM.match(img, context).matched || I_N_WAITING.match(img, context).matched }
+    private suspend fun waitBattle(waitTimeSec: Int): Boolean = teamHelper.waitBattle(waitTimeSec)
+    private suspend fun checkZones(name: String) { log("Check zones: $name"); generalRoom.checkZones(name) }
 }

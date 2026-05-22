@@ -189,7 +189,11 @@ class DuelTask(context: Context, device: DeviceController, config: TaskConfig) :
             I_BAN.match(img, context).matched || I_D_WORD_BATTLE.match(img, context).matched || I_D_CHECK_BAN.match(img, context).matched
     }
 
-    private fun isInRealBattle(): Boolean = false
+    private fun isInRealBattle(): Boolean {
+        val img = screenshot() ?: return false
+        return I_D_BATTLE.match(img, context).matched || I_D_BATTLE2.match(img, context).matched ||
+            I_D_BATTLE_PROTECT.match(img, context).matched
+    }
 
     private suspend fun duelExitBattle() {
         while (true) {

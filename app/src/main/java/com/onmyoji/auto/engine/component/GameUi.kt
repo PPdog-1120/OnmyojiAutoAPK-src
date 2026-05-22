@@ -625,6 +625,21 @@ class GameUi(
         }
     }
 
+    // ========== 字符串页面跳转 ==========
+
+    /**
+     * 通过页面名称跳转 — 便捷方法
+     * 例如: uiGoto("page_main"), uiGoto("page_shikigami_records")
+     */
+    suspend fun uiGoto(pageName: String, confirmWait: Long = 0, timeout: Long = 60_000): Boolean {
+        val page = uiPages.find { it.name == pageName }
+        if (page == null) {
+            log("Unknown page name: $pageName")
+            return false
+        }
+        return uiGoto(page, confirmWait, timeout)
+    }
+
     // ========== 辅助方法 ==========
 
     private suspend fun appearThenClick(rule: RuleImage, interval: Long = 1000): Boolean {

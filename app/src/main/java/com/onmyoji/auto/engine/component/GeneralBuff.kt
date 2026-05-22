@@ -200,7 +200,7 @@ class GeneralBuff(
     /**
      * 获取觉醒/御魂加成的点击区域 — 对应 OAS get_area_image
      */
-    private fun getAreaImage(target: RuleImage, img: Bitmap): IntArray? {
+    private suspend fun getAreaImage(target: RuleImage, img: Bitmap): IntArray? {
         if (!target.match(img, context).matched) {
             log("No ${target.name} buff")
             return null

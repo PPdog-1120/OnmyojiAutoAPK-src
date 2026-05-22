@@ -5,6 +5,7 @@ import com.onmyoji.auto.engine.BaseTask
 import com.onmyoji.auto.engine.DeviceController
 import com.onmyoji.auto.engine.RuleImage
 import com.onmyoji.auto.model.TaskConfig
+import kotlinx.coroutines.delay
 
 /**
  * 回主页任务 — 导航回到游戏主页
@@ -36,7 +37,7 @@ class GotoMainTask(
             }
             // 点击左上角返回区域
             device.click(60, 40)
-            delay(1000)
+            delay(1000L)
             attempts++
         }
         log("=== 回主页任务完成 ===")

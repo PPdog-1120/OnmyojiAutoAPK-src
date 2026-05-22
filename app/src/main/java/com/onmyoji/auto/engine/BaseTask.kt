@@ -84,7 +84,7 @@ abstract class BaseTask(
     /**
      * 等待目标消失
      */
-    protected suspend fun waitUntilDisappear(
+    protected open suspend fun waitUntilDisappear(
         rule: RuleImage,
         timeoutMs: Long = 15000
     ) {

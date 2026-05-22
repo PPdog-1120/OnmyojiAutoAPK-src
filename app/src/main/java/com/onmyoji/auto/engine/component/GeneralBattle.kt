@@ -197,7 +197,7 @@ open class GeneralBattle(
             }
             // 未知界面, 既不是准备界面也不是战斗界面
             log("Wait for preparation page")
-            delay((400..800).random())
+            delay((400L..800L).random())
         }
         return false
     }
@@ -339,7 +339,7 @@ open class GeneralBattle(
                 if (!appear(I_WIN, img)) break
             } else {
                 // 如果失败且 点击失败后
-                if (appearThenClick(I_FALSE, img, 600f)) continue
+                if (appearThenClick(I_FALSE, img, 600L)) continue
                 if (!appear(I_FALSE, img, 600f)) return false
             }
         }
@@ -500,7 +500,7 @@ open class GeneralBattle(
      * tip: 因为有 friends 判别, 所以即使在准备界面也会识别在战斗中
      */
     fun isInBattle(isScreenshot: Boolean = true, existingImg: Bitmap? = null): Boolean {
-        val img = if (isScreenshot) screenshot() else existingImg ?: return false
+        val img: Bitmap = if (isScreenshot) (screenshot() ?: return false) else (existingImg ?: return false)
         return appear(I_BATTLE_INFO, img) ||
                 appear(I_FRIENDS, img) ||
                 appear(I_WIN, img) ||
@@ -512,7 +512,7 @@ open class GeneralBattle(
      * 判断是否在真正的战斗中(不是战斗准备界面也不是战斗结束界面)
      */
     fun isInRealBattle(isScreenshot: Boolean = true, existingImg: Bitmap? = null): Boolean {
-        val img = if (isScreenshot) screenshot() else existingImg ?: return false
+        val img: Bitmap = if (isScreenshot) (screenshot() ?: return false) else (existingImg ?: return false)
         return appear(I_BATTLE_INFO, img)
     }
 
@@ -520,7 +520,7 @@ open class GeneralBattle(
      * 判断是否在准备中 — 对应 OAS is_in_prepare
      */
     fun isInPrepare(isScreenshot: Boolean = true, existingImg: Bitmap? = null): Boolean {
-        val img = if (isScreenshot) screenshot() else existingImg ?: return false
+        val img: Bitmap = if (isScreenshot) (screenshot() ?: return false) else (existingImg ?: return false)
         return appear(I_BUFF, img) ||
                 appear(I_PREPARE_HIGHLIGHT, img) ||
                 appear(I_PREPARE_DARK, img) ||

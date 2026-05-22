@@ -296,4 +296,16 @@ class AreaBossTask(
         device.click(x, y)
         delay(500)
     }
+
+    private suspend fun click(rule: RuleImage) {
+        val img = screenshot() ?: return
+        val result = rule.match(img, context)
+        if (result.matched) {
+            device.click(result.centerX, result.centerY)
+        } else {
+            val (x, y) = rule.coord()
+            device.click(x, y)
+        }
+        delay(500)
+    }
 }

@@ -107,7 +107,7 @@ class DuelTask(context: Context, device: DeviceController, config: TaskConfig) :
             I_D_CELEB_STAR.match(img, context).matched || I_D_CELEB_HONOR.match(img, context).matched
     }
 
-    private fun canStartDuel(): Boolean {
+    private suspend fun canStartDuel(): Boolean {
         if (isTimeUp(config.duelLimitTimeMinutes)) { log("Duel task is over time"); return false }
         if (currentScore >= config.duelTargetScore) { log("Duel task is over score"); return false }
         val img = screenshot() ?: return false

@@ -126,7 +126,7 @@ class DemonRetreatTask(context: Context, device: DeviceController, config: TaskC
 
         // 等待集结
         delay(5000)
-        waitUntilDisappear(I_DEMON_GATHER)
+        waitUntilDisappear(I_DEMON_GATHER, 30000)
         return runDemonBattle()
     }
 
@@ -165,7 +165,7 @@ class DemonRetreatTask(context: Context, device: DeviceController, config: TaskC
         return false
     }
 
-    private suspend fun waitUntilDisappear(rule: RuleImage, timeoutMs: Long = 30000) {
+    override protected suspend fun waitUntilDisappear(rule: RuleImage, timeoutMs: Long) {
         val deadline = System.currentTimeMillis() + timeoutMs
         while (System.currentTimeMillis() < deadline) { if (!rule.match(screenshot() ?: break, context).matched) break; delay(500) }
     }

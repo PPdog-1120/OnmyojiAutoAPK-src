@@ -131,7 +131,7 @@ class AbyssShadowsTask(
         }
 
         // 等待可进攻时间
-        waitUntilDisappear(I_WAIT_TO_START)
+        waitUntilDisappear(I_WAIT_TO_START, 30000)
 
         // 战斗循环
         if (!config.abyssShadowsCombatTimeEnable) {
@@ -402,7 +402,7 @@ class AbyssShadowsTask(
         }
     }
 
-    private suspend fun waitUntilDisappear(rule: RuleImage, timeoutMs: Long = 30000) {
+    override protected suspend fun waitUntilDisappear(rule: RuleImage, timeoutMs: Long) {
         val deadline = System.currentTimeMillis() + timeoutMs
         while (System.currentTimeMillis() < deadline) {
             val img = screenshot() ?: break

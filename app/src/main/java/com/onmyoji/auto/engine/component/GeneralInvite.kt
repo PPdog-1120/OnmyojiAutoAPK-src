@@ -326,7 +326,7 @@ class GeneralInvite(
      * 判断是否在房间里面 — 对应 OAS is_in_room
      */
     fun isInRoom(isScreenshot: Boolean = true, existingImg: Bitmap? = null): Boolean {
-        val img = if (isScreenshot) screenshot() else existingImg ?: return false
+        val img: Bitmap = if (isScreenshot) (screenshot() ?: return false) else (existingImg ?: return false)
         return appear(I_GI_EMOJI_1, img) || appear(I_GI_EMOJI_2, img)
     }
 
@@ -392,7 +392,7 @@ class GeneralInvite(
     /**
      * 确认邀请人数是否超出房间最大值 — 对应 OAS ensure_room_type
      */
-    private fun ensureRoomType(inviteNumber: InviteNumber): Boolean {
+    private suspend fun ensureRoomType(inviteNumber: InviteNumber): Boolean {
         val friendNumber = if (inviteNumber == InviteNumber.ONE) 1 else 2
         if (friendNumber == 2) {
             if (currentRoomType == RoomType.NORMAL_2) {

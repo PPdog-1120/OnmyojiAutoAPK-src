@@ -73,7 +73,7 @@ class HuntTask(context: Context, device: DeviceController, config: TaskConfig) :
         log("=== 狩猎战完成 ===")
     }
 
-    private fun checkDatetime(): Boolean {
+    private suspend fun checkDatetime(): Boolean {
         val now = java.util.Calendar.getInstance()
         val hour = now.get(java.util.Calendar.HOUR_OF_DAY)
         if (kirinDay) {

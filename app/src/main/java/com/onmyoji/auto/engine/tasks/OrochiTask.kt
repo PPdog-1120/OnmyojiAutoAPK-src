@@ -344,7 +344,7 @@ class OrochiTask(
     private fun checkThenAccept(): Boolean = false
     private fun waitBattle(waitTime: Int): Boolean = false
 
-    private fun orochiSwitchSoul() {
+    private suspend fun orochiSwitchSoul() {
         if (!config.orochiAutoSwitchSoul) return
         val groupTeam = when (config.orochiLayer) {
             "拾层" -> config.orochiTenSwitch

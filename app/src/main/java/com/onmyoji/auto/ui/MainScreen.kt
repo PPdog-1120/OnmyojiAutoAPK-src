@@ -10,24 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.onmyoji.auto.engine.TaskManager
-
-// ========== 状态工厂 ==========
-
-fun createMainScreenState(
-    taskManager: TaskManager,
-    callbacks: ScreenCallbacks
-): MainScreenState = MainScreenState(
-    taskManager = taskManager,
-    callbacks = callbacks,
-    selectedTask = mutableStateOf(com.onmyoji.auto.model.TaskType.EXPLORATION),
-    config = mutableStateOf(com.onmyoji.auto.model.TaskConfig()),
-    accessibilityEnabled = mutableStateOf(false),
-    projectionEnabled = mutableStateOf(false),
-    logLines = mutableStateListOf(),
-    logFilePath = mutableStateOf(null),
-    taskState = mutableStateOf(TaskManager.State.IDLE),
-    runningTask = mutableStateOf(null),
-)
+import kotlinx.coroutines.launch
 
 // ========== MainScreen ==========
 

@@ -1,6 +1,8 @@
 package com.onmyoji.auto.ui
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import com.onmyoji.auto.engine.TaskManager
 import com.onmyoji.auto.model.TaskConfig
 import com.onmyoji.auto.model.TaskType
@@ -17,7 +19,7 @@ class ScreenCallbacks(
 
 // ========== State Holder ==========
 
-data class MainScreenState(
+class MainScreenState(
     val taskManager: TaskManager,
     val callbacks: ScreenCallbacks,
     val selectedTask: MutableState<TaskType>,
@@ -29,6 +31,35 @@ data class MainScreenState(
     val taskState: MutableState<TaskManager.State>,
     val runningTask: MutableState<TaskType?>,
 )
+
+// ========== 状态工厂（避免寄存器溢出）==========
+
+fun createMainScreenState(
+    taskManager: TaskManager,
+    callbacks: ScreenCallbacks
+): MainScreenState {
+    val selectedTask = mutableStateOf(TaskType.EXPLORATION)
+    val config = mutableStateOf(TaskConfig())
+    val accessibilityEnabled = mutableStateOf(false)
+    val projectionEnabled = mutableStateOf(false)
+    val logLines = mutableStateListOf<String>()
+    val logFilePath = mutableStateOf<String?>(null)
+    val taskState = mutableStateOf(TaskManager.State.IDLE)
+    val runningTask = mutableStateOf<TaskType?>(null)
+
+    return MainScreenState(
+        taskManager = taskManager,
+        callbacks = callbacks,
+        selectedTask = selectedTask,
+        config = config,
+        accessibilityEnabled = accessibilityEnabled,
+        projectionEnabled = projectionEnabled,
+        logLines = logLines,
+        logFilePath = logFilePath,
+        taskState = taskState,
+        runningTask = runningTask,
+    )
+}
 
 // ========== 操作函数 ==========
 

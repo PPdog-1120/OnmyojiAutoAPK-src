@@ -1,0 +1,44 @@
+# Built outputs
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+/build/
+/app/build/
+/out/
+/release/
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IDE - Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE - VS Code
+.vscode/
+
+# Local config
+local.properties
+signing.properties
+*.keystore
+*.jks
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Logs
+*.log
